@@ -16,7 +16,7 @@ const SERPAPI_BASE = '/api/serpapi';
 //   VITE_AMAZON_AFFILIATE_TAG=your_tag
 const TMAPI_KEY = import.meta.env.VITE_TMAPI_KEY || '';
 const SERPAPI_KEY = import.meta.env.VITE_SERPAPI_KEY || '';
-const AMAZON_TAG = import.meta.env.VITE_AMAZON_AFFILIATE_TAG || 'yuhi-20';
+const AMAZON_TAG = import.meta.env.VITE_AMAZON_AFFILIATE_TAG || 'yuhi00-21';
 
 // ─── TMAPI — Amazon product detail by URL ────────────────────────────────────
 export async function fetchAmazonByUrl(productUrl) {
@@ -181,7 +181,7 @@ export function getMockResults(keyword) {
       image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300',
       rating: 4.5,
       reviews: 1240,
-      url: `https://www.amazon.es/s?k=${encodeURIComponent(base)}&tag=yuhi-21`,
+      url: `https://www.amazon.es/s?k=${encodeURIComponent(base)}&tag=yuhi00-21`,
       currency: '€',
       inStock: true,
       badge: 'Más vendido',
@@ -241,7 +241,7 @@ export function getMockResults(keyword) {
       image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=300',
       rating: 4.8,
       reviews: 612,
-      url: `https://www.amazon.es/s?k=${encodeURIComponent(base)}&tag=yuhi-21`,
+      url: `https://www.amazon.es/s?k=${encodeURIComponent(base)}&tag=yuhi00-21`,
       currency: '€',
       inStock: false,
       badge: null,
