@@ -1,112 +1,208 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { getByCategory, getCheapestPrice, STORE_META } from "../data/catalog";
+import { compareAllSources, getMockResults } from "../services/api";
 
 const CATEGORIES = [
-  { id: "merchandising", label: "Merchandising" },
-  { id: "alimentacion",  label: "Alimentación"  },
-  { id: "ropa",          label: "Ropa"           },
-  { id: "literatura",    label: "Literatura"     },
+  { id: "merchandising", label: "Merchandising", emoji: "🎬", color: "#9f1239", searchQuery: "anime figures manga" },
+  { id: "alimentacion",  label: "Alimentación",  emoji: "🍜", color: "#b45309", searchQuery: "japanese ramen anime snacks" },
+  { id: "ropa",          label: "Ropa",          emoji: "👕", color: "#0369a1", searchQuery: "anime t-shirt manga hoodie" },
+  { id: "literatura",    label: "Literatura",    emoji: "📚", color: "#6f46c1", searchQuery: "manga books japanese comic" },
 ];
 
 export default function Categorias() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [activecat, setActivecat] = useState(searchParams.get("cat") || "merchandising");
+  const [loading, setLoading] = useState(false);
+  const [apiProducts, setApiProducts] = useState([]);
 
-  const products = getByCategory(activecat);
+  const catalogProducts = getByCategory(activecat);
+  const activeCat = CATEGORIES.find((c) => c.id === activecat);
+
+  useEffect(() => {
+    const cat = CATEGORIES.find((c) => c.id === activecat);
+    if (!cat) return;
+
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const results = await compareAllSources(cat.searchQuery);
+        setApiProducts(results.slice(0, 6));
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setApiProducts(getMockResults(cat.searchQuery).slice(0, 6));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [activecat]);
+
+  // Merge: catalog products first, then API results
+  const allProducts = [
+    ...catalogProducts,
+    ...apiProducts.filter(
+      (api) =>
+        !catalogProducts.some(
+          (cat) => cat.title.toLowerCase() === api.title.toLowerCase()
+        )
+    ),
+  ];
 
   return (
     <div className="pb-20 min-h-screen" style={{ background: "#FBFCFF" }}>
       <Header />
 
-      {/* Tab bar */}
-      <div className="flex gap-2 px-4 pt-4 overflow-x-auto no-scrollbar">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setActivecat(cat.id)}
-            className="whitespace-nowrap text-xs font-semibold px-4 py-2 rounded-full transition-colors"
-            style={
-              activecat === cat.id
-                ? { background: "#1C6E8C", color: "#fff" }
-                : { background: "#D0CCD0", color: "#274156" }
-            }
-          >
-            {cat.label}
-          </button>
-        ))}
+      {/* Category header with gradient */}
+      <div
+        className="px-4 pt-6 pb-8"
+        style={{
+          background: `linear-gradient(135deg, ${activeCat?.color}40 0%, ${activeCat?.color}20 100%)`,
+          borderBottom: `3px solid ${activeCat?.color}`
+        }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-5xl">{activeCat?.emoji}</span>
+          <div>
+            <h1 className="text-3xl font-bold" style={{ color: "#274156" }}>
+              {activeCat?.label}
+            </h1>
+            <p className="text-sm" style={{ color: "#1C6E8C" }}>
+              {catalogProducts.length} recomendados
+            </p>
+          </div>
+        </div>
+
+        {/* Tab bar */}
+        <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActivecat(cat.id)}
+              className="whitespace-nowrap text-sm font-bold px-5 py-2.5 rounded-full transition-all auth-button auth-outline"
+              style={
+                activecat === cat.id
+                  ? { background: cat.color, color: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }
+                  : { background: "#fff", color: "#274156", border: `2px solid ${cat.color}40` }
+              }
+            >
+              {cat.emoji} {cat.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="px-4 pt-4 flex flex-col gap-4">
-        {products.map((product) => {
-          const cheapest = getCheapestPrice(product);
-          return (
-            <div
-              key={product.id}
-              className="bg-white rounded-2xl overflow-hidden shadow-sm"
-              style={{ border: "1px solid #D0CCD0" }}
-            >
-              {/* Image */}
-              <div className="relative w-full h-44" style={{ background: "#f0f0f0" }}>
-                {product.image ? (
-                  <img src={product.image} alt={product.title} className="w-full h-full object-cover" loading="lazy" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-5xl">🛍️</div>
-                )}
-                {product.badge && (
-                  <span
-                    className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full"
-                    style={{ background: "#FFA1C7", color: "#274156" }}
+      <div className="px-4 pt-6 pb-4 flex flex-col gap-6">
+        {/* Catalog products section */}
+        {catalogProducts.length > 0 && (
+          <div>
+            <h2 className="text-lg font-bold mb-4" style={{ color: "#274156" }}>
+              💝 Recomendados
+            </h2>
+            <div className="flex flex-col gap-4">
+              {catalogProducts.map((product) => {
+                const cheapest = getCheapestPrice(product);
+                return (
+                  <button
+                    key={product.id}
+                    onClick={() => navigate(`/ofertas?product=${product.id}`)}
+                    className="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-lg transition-all active:scale-95 text-left"
+                    style={{ border: `3px solid ${activeCat?.color}` }}
                   >
-                    {product.badge}
-                  </span>
-                )}
-                {/* Store count badge */}
-                <span
-                  className="absolute top-2 right-2 text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                  style={{ background: "rgba(28,110,140,0.9)", color: "#fff" }}
-                >
-                  {product.stores.length} tiendas
-                </span>
-              </div>
-
-              {/* Info */}
-              <div className="px-4 py-3 flex flex-col gap-2">
-                <p className="text-sm font-semibold leading-snug" style={{ color: "#274156" }}>
-                  {product.title}
-                </p>
-
-                {/* Cheapest price + stores preview */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px]" style={{ color: "#D0CCD0" }}>Desde </span>
-                    <span className="font-bold text-base" style={{ color: "#1C6E8C" }}>
-                      {cheapest ? `${cheapest.currency}${cheapest.price.toFixed(2)}` : "—"}
-                    </span>
-                  </div>
-                  {/* Store icons row */}
-                  <div className="flex gap-1">
-                    {product.stores.map((s) => (
-                      <span key={s.store} className="text-base" title={STORE_META[s.store]?.name}>
-                        {STORE_META[s.store]?.icon}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => navigate(`/ofertas?product=${product.id}`)}
-                  className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                  style={{ background: "#274156" }}
-                >
-                  Comparar precios
-                </button>
-              </div>
+                    <div className="flex gap-4 p-4">
+                      <div 
+                        className="w-32 h-32 shrink-0 rounded-2xl overflow-hidden"
+                        style={{ background: "#f0f0f0" }}
+                      >
+                        {product.image ? (
+                          <img src={product.image} alt={product.title} className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-5xl">🛍️</div>
+                        )}
+                      </div>
+                      <div className="flex-1 flex flex-col justify-between">
+                        <div>
+                          {product.badge && (
+                            <span className="inline-block text-xs font-bold px-3 py-1 rounded-full text-white mb-2" style={{ background: activeCat?.color }}>
+                              {product.badge}
+                            </span>
+                          )}
+                          <p className="text-lg font-black leading-snug line-clamp-2" style={{ color: "#274156", letterSpacing: '0.015em' }}>
+                            {product.title}
+                          </p>
+                          <p className="text-base mt-2 font-black" style={{ color: activeCat?.color }}>
+                            {cheapest ? `${cheapest.currency}${cheapest.price.toFixed(2)}` : "—"}
+                          </p>
+                        </div>
+                        <div className="flex gap-1 flex-wrap">
+                          {product.stores.map((s) => (
+                            <span key={s.store} className="text-2xl" title={STORE_META[s.store]?.name}>
+                              {STORE_META[s.store]?.icon}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        )}
+
+        {/* API products section */}
+        {apiProducts.length > 0 && (
+          <div>
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: "#274156" }}>
+              {loading ? "🔄 Actualizando..." : "📱 Más opciones"}
+            </h2>
+            <div className="flex flex-col gap-4">
+              {apiProducts.map((product) => (
+                <a
+                  key={`${product.source}-${product.id}`}
+                  href={product.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-lg active:scale-95 transition-all"
+                  style={{ border: "2px solid #D0CCD0", textDecoration: "none" }}
+                >
+                  <div className="flex gap-4 p-4">
+                    <div className="w-24 h-24 shrink-0 rounded-2xl" style={{ background: "#f0f0f0" }}>
+                      {product.image ? (
+                        <img src={product.image} alt={product.title} className="w-full h-full object-cover rounded-2xl" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-4xl">{product.sourceIcon}</div>
+                      )}
+                    </div>
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div>
+                        <p className="text-xs font-bold mb-1" style={{ color: "#1C6E8C" }}>
+                          {product.sourceIcon} {product.source}
+                        </p>
+                        <p className="text-base font-black line-clamp-2" style={{ color: "#274156", letterSpacing: '0.01em' }}>
+                          {product.title}
+                        </p>
+                      </div>
+                      <p className="text-lg font-black" style={{ color: activeCat?.color }}>
+                        {product.currency}{product.price?.toFixed(2) || "—"}
+                      </p>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!loading && catalogProducts.length === 0 && apiProducts.length === 0 && (
+          <div className="flex flex-col items-center py-16 gap-3 text-center">
+            <span className="text-6xl">🔍</span>
+            <p className="font-bold text-lg" style={{ color: "#274156" }}>Cargando productos...</p>
+          </div>
+        )}
       </div>
     </div>
   );

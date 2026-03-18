@@ -1,1 +1,36 @@
 /* App-level styles — main styles are in index.css */
+
+/* Auth components styling */
+.auth-input {
+	background: #F3F4F6;
+	border: 1px solid rgba(39,65,86,0.06);
+	padding: 0.75rem 1rem;
+	border-radius: 12px;
+	color: #274156;
+	font-size: 0.95rem;
+	outline: none;
+	transition: box-shadow 180ms ease, transform 120ms ease, border-color 160ms ease;
+}
+.auth-input::placeholder { color: #9AA9B4; }
+.auth-input:focus { box-shadow: 0 8px 24px rgba(16,24,40,0.06); border-color: rgba(39,65,86,0.16); transform: translateY(-1px); }
+
+.auth-button { padding: 0.875rem 1rem; border-radius: 12px; font-weight: 600; font-size: 1.05rem; transition: transform 120ms ease, box-shadow 160ms ease, opacity 120ms ease; }
+.auth-primary {
+	background: linear-gradient(90deg,#ec4899,#db2777);
+	color: white;
+	border-radius: 12px;
+	border: none;
+	box-shadow: 0 8px 24px rgba(219,39,119,0.12);
+}
+.auth-primary:active { transform: translateY(1px) scale(0.998); box-shadow: 0 6px 18px rgba(219,39,119,0.10); }
+.auth-primary:disabled { opacity: 0.6; pointer-events: none; }
+.auth-outline {
+	background: transparent;
+	color: #ec4899;
+	border: 2px solid #F0A7C2;
+	padding: 0.85rem 1rem;
+	border-radius: 12px;
+	font-weight: 600;
+}
+.auth-outline:hover { background: rgba(236,73,128,0.04); }
+
