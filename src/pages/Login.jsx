@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import AuthInput from "../components/AuthInput";
+import AuthButton from "../components/AuthButton";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -26,43 +28,34 @@ export default function Login() {
       <Header />
 
       <div className="px-4 pt-10 flex flex-col gap-3">
-        <input
-          type="text"
+        <AuthInput
           name="usuario"
           value={form.usuario}
           onChange={change}
           placeholder="Usuario"
           autoComplete="username"
-          className="w-full px-4 py-3.5 rounded-2xl text-sm outline-none"
-          style={{ background: "#D0CCD0", color: "#274156" }}
+          label={null}
         />
-        <input
+
+        <AuthInput
           type="password"
           name="password"
           value={form.password}
           onChange={change}
           placeholder="Contraseña"
           autoComplete="current-password"
-          className="w-full px-4 py-3.5 rounded-2xl text-sm outline-none"
-          style={{ background: "#D0CCD0", color: "#274156" }}
+          label={null}
         />
 
         {error && <p className="text-red-500 text-xs px-1">{error}</p>}
 
-        <button
-          onClick={handleLogin}
-          className="w-full py-3.5 rounded-2xl text-sm font-semibold text-white hover:opacity-90 transition-opacity mt-2"
-          style={{ background: "#274156" }}
-        >
+        <AuthButton type="button" onClick={handleLogin} variant="primary">
           Iniciar Sesión
-        </button>
-        <button
-          onClick={handleRegister}
-          className="w-full py-3.5 rounded-2xl text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-          style={{ background: "#274156" }}
-        >
+        </AuthButton>
+
+        <AuthButton type="button" onClick={handleRegister} variant="outline">
           Registro
-        </button>
+        </AuthButton>
       </div>
     </div>
   );

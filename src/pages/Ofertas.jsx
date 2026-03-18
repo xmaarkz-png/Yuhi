@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import AuthButton from "../components/AuthButton";
 import { getById, searchCatalog, getCheapestPrice, STORE_META } from "../data/catalog";
 
 // ── Comparison view: one product vs multiple stores ────────────────────────
@@ -197,13 +198,9 @@ function CatalogBrowse() {
                       </span>
                       <span className="text-xs" style={{ color: "#D0CCD0" }}>{product.stores.length} tiendas</span>
                     </div>
-                    <button
-                      onClick={() => navigate(`/ofertas?product=${product.id}`)}
-                      className="w-full py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90"
-                      style={{ background: "#274156" }}
-                    >
+                    <AuthButton type="button" onClick={() => navigate(`/ofertas?product=${product.id}`)} variant="primary">
                       Comparar precios
-                    </button>
+                    </AuthButton>
                   </div>
                 </div>
               );

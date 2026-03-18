@@ -82,7 +82,7 @@ export default function Categorias() {
             <button
               key={cat.id}
               onClick={() => setActivecat(cat.id)}
-              className="whitespace-nowrap text-sm font-bold px-5 py-2.5 rounded-full transition-all"
+              className="whitespace-nowrap text-sm font-bold px-5 py-2.5 rounded-full transition-all auth-button auth-outline"
               style={
                 activecat === cat.id
                   ? { background: cat.color, color: "#fff", boxShadow: "0 4px 12px rgba(0,0,0,0.15)" }
