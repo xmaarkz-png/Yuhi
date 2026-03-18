@@ -153,6 +153,20 @@ export async function compareAllSources(keyword) {
   return all;
 }
 
+/**
+ * Search for a specific product by title and return the cheapest prices across sources.
+ * Used to fetch live prices for catalog products.
+ */
+export async function fetchPricesForProduct(productTitle) {
+  try {
+    const results = await compareAllSources(productTitle);
+    return results.slice(0, 4); // Return top 4 results (cheapest first)
+  } catch (error) {
+    console.error(`Error fetching prices for "${productTitle}":`, error);
+    return [];
+  }
+}
+
 // ─── Demo / mock data (used when no API keys are set) ────────────────────────
 export function getMockResults(keyword) {
   const base = keyword.toLowerCase();

@@ -1,12 +1,13 @@
 /**
  * Catálogo curado de productos populares de cultura asiática/otaku.
  *
- * INSTRUCCIONES PARA AFILIADOS:
- *  - Amazon:     Sustituye la URL base y añade ?tag=TU_TAG_AQUI
- *  - AliExpress: Genera el enlace desde el portal Portals.aliexpress.com
- *  - CDJapan:    Regístrate en cdJapan.co.jp/affiliate y genera el enlace
- *  - Play-Asia:  Programa en play-asia.com/affiliate
- *  - ZenPlus:    Programa en zenplus.jp/affiliates
+ * TIENDAS CON PROGRAMAS DE AFILIADOS PÚBLICOS:
+ *  - Amazon:     Programa Associates — genera enlaces en tu dashboard
+ *  - AliExpress: Programa Portals — crea enlaces desde portals.aliexpress.com
+ *  - CDJapan:    Programa en cdJapan.co.jp/affiliate (en proceso)
+ *  - eBay:       Programa Partners — https://partner.ebay.com
+ *  - Rakuten:    Affiliate program — https://www.rakuten.com/partners/
+ *  - J-List:     Affiliate program — https://www.j-list.com/affiliate/ (anime/Asian products)
  *
  * Las URLs marcadas con '#TODO' son placeholders — reemplázalas con tus
  * propios enlaces de afiliado antes de publicar.
@@ -18,9 +19,10 @@
 export const STORE_META = {
   amazon:     { name: 'Amazon',     icon: '🛒' },
   aliexpress: { name: 'AliExpress', icon: '🛍️' },
-  cdJapan:    { name: 'CDJapan',    icon: '🇯🇵' },
-  playAsia:   { name: 'Play-Asia',  icon: '🎮' },
-  zenPlus:    { name: 'ZenPlus',    icon: '⛩️' },
+  cdjapan:    { name: 'CDJapan',    icon: '🇯🇵' },
+  ebay:       { name: 'eBay',       icon: '📦' },
+  rakuten:    { name: 'Rakuten',    icon: '🏪' },
+  jlist:      { name: 'J-List',     icon: '🎌' },
 };
 
 export const CATALOG = [
@@ -36,7 +38,8 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 29.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 18.50, currency: '€', url: '#TODO-aliexpress', inStock: true  },
-      { store: 'playAsia',   price: 34.99, currency: '€', url: '#TODO-playasia', inStock: false },
+      { store: 'cdjapan',    price: 32.00, currency: '€', url: '#TODO-cdjapan', inStock: true  },
+      { store: 'ebay',       price: 25.99, currency: '€', url: '#TODO-ebay', inStock: true  },
     ],
   },
   {
@@ -50,7 +53,7 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 24.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 14.90, currency: '€', url: '#TODO-aliexpress', inStock: true  },
-      { store: 'cdJapan',    price: 31.00, currency: '€', url: '#TODO-cdjapan', inStock: true  },
+      { store: 'cdjapan',    price: 28.00, currency: '€', url: '#TODO-cdjapan', inStock: true  },
     ],
   },
   {
@@ -64,7 +67,7 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 14.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 9.80,  currency: '€', url: '#TODO-aliexpress', inStock: true  },
-      { store: 'playAsia',   price: 16.50, currency: '€', url: '#TODO-playasia', inStock: true  },
+      { store: 'ebay',       price: 16.50, currency: '€', url: '#TODO-ebay', inStock: true  },
     ],
   },
   {
@@ -78,7 +81,7 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 12.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 6.50,  currency: '€', url: '#TODO-aliexpress', inStock: true  },
-      { store: 'zenPlus',    price: 15.00, currency: '€', url: '#TODO-zenplus', inStock: true  },
+      { store: 'ebay',       price: 11.00, currency: '€', url: '#TODO-ebay', inStock: true  },
     ],
   },
 
@@ -94,7 +97,7 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 9.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 7.20,  currency: '€', url: '#TODO-aliexpress', inStock: true  },
-      { store: 'zenPlus',    price: 11.50, currency: '€', url: '#TODO-zenplus', inStock: true  },
+      { store: 'rakuten',    price: 10.50, currency: '€', url: '#TODO-rakuten', inStock: true  },
     ],
   },
   {
@@ -108,7 +111,7 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 14.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 10.50, currency: '€', url: '#TODO-aliexpress', inStock: true  },
-      { store: 'zenPlus',    price: 16.80, currency: '€', url: '#TODO-zenplus', inStock: true  },
+      { store: 'cdjapan',    price: 16.00, currency: '€', url: '#TODO-cdjapan', inStock: true  },
     ],
   },
   {
@@ -122,7 +125,7 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 11.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 8.90,  currency: '€', url: '#TODO-aliexpress', inStock: true  },
-      { store: 'zenPlus',    price: 13.50, currency: '€', url: '#TODO-zenplus', inStock: false },
+      { store: 'rakuten',    price: 13.50, currency: '€', url: '#TODO-rakuten', inStock: true  },
     ],
   },
   {
@@ -136,7 +139,7 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 16.50, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 12.00, currency: '€', url: '#TODO-aliexpress', inStock: true  },
-      { store: 'zenPlus',    price: 18.00, currency: '€', url: '#TODO-zenplus', inStock: true  },
+      { store: 'cdjapan',    price: 18.00, currency: '€', url: '#TODO-cdjapan', inStock: true  },
     ],
   },
 
@@ -152,6 +155,7 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 19.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 11.50, currency: '€', url: '#TODO-aliexpress', inStock: true  },
+      { store: 'ebay',       price: 18.00, currency: '€', url: '#TODO-ebay', inStock: true  },
     ],
   },
   {
@@ -165,7 +169,7 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 34.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 22.00, currency: '€', url: '#TODO-aliexpress', inStock: true  },
-      { store: 'playAsia',   price: 39.00, currency: '€', url: '#TODO-playasia', inStock: true  },
+      { store: 'ebay',       price: 32.00, currency: '€', url: '#TODO-ebay', inStock: true  },
     ],
   },
   {
@@ -192,7 +196,7 @@ export const CATALOG = [
     stores: [
       { store: 'amazon',     price: 45.00, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 28.00, currency: '€', url: '#TODO-aliexpress', inStock: true  },
-      { store: 'zenPlus',    price: 52.00, currency: '€', url: '#TODO-zenplus', inStock: true  },
+      { store: 'rakuten',    price: 50.00, currency: '€', url: '#TODO-rakuten', inStock: true  },
     ],
   },
 
@@ -206,8 +210,9 @@ export const CATALOG = [
     badge: null,
     featured: true,
     stores: [
-      { store: 'amazon',  price: 8.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
-      { store: 'cdJapan', price: 6.50,  currency: '€', url: '#TODO-cdjapan', inStock: true  },
+      { store: 'amazon',     price: 8.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
+      { store: 'cdjapan',    price: 6.50,  currency: '€', url: '#TODO-cdjapan', inStock: true  },
+      { store: 'jlist',      price: 7.99,  currency: '€', url: '#TODO-jlist', inStock: true  },
     ],
   },
   {
@@ -219,8 +224,9 @@ export const CATALOG = [
     badge: 'Bestseller',
     featured: false,
     stores: [
-      { store: 'amazon',  price: 9.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
-      { store: 'cdJapan', price: 7.20,  currency: '€', url: '#TODO-cdjapan', inStock: true  },
+      { store: 'amazon',     price: 9.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
+      { store: 'cdjapan',    price: 7.20,  currency: '€', url: '#TODO-cdjapan', inStock: true  },
+      { store: 'jlist',      price: 8.99,  currency: '€', url: '#TODO-jlist', inStock: true  },
     ],
   },
   {
@@ -232,8 +238,9 @@ export const CATALOG = [
     badge: null,
     featured: false,
     stores: [
-      { store: 'amazon',  price: 8.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
-      { store: 'cdJapan', price: 6.80,  currency: '€', url: '#TODO-cdjapan', inStock: true  },
+      { store: 'amazon',     price: 8.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
+      { store: 'cdjapan',    price: 6.80,  currency: '€', url: '#TODO-cdjapan', inStock: true  },
+      { store: 'jlist',      price: 7.99,  currency: '€', url: '#TODO-jlist', inStock: true  },
     ],
   },
   {
@@ -245,8 +252,9 @@ export const CATALOG = [
     badge: 'Colección',
     featured: false,
     stores: [
-      { store: 'amazon',  price: 99.99, currency: '€', url: '#TODO-amazon', inStock: true  },
-      { store: 'cdJapan', price: 82.00, currency: '€', url: '#TODO-cdjapan', inStock: true  },
+      { store: 'amazon',     price: 99.99, currency: '€', url: '#TODO-amazon', inStock: true  },
+      { store: 'cdjapan',    price: 82.00, currency: '€', url: '#TODO-cdjapan', inStock: true  },
+      { store: 'jlist',      price: 89.99, currency: '€', url: '#TODO-jlist', inStock: true  },
     ],
   },
 ];
@@ -256,26 +264,32 @@ export function getByCategory(categoryId) {
   return CATALOG.filter((p) => p.category === categoryId);
 }
 
-/** Returns a single product by id */
-export function getById(id) {
-  return CATALOG.find((p) => p.id === id) || null;
+/** Returns the cheapest store option for a product */
+export function getCheapestPrice(product) {
+  if (!product.stores || product.stores.length === 0) return null;
+  return product.stores.reduce((min, store) =>
+    store.price < min.price ? store : min
+  );
 }
 
 /** Returns featured products (one per category) */
 export function getFeatured() {
-  return CATALOG.filter((p) => p.featured);
+  const categories = ['merchandising', 'alimentacion', 'ropa', 'literatura'];
+  return categories
+    .map((cat) => CATALOG.find((p) => p.category === cat && p.featured))
+    .filter(Boolean);
 }
 
-/** Filter catalog by search query (title match) */
+/** Search products by title */
 export function searchCatalog(query) {
-  const q = query.toLowerCase().trim();
-  if (!q) return CATALOG;
-  return CATALOG.filter((p) => p.title.toLowerCase().includes(q));
+  const q = query.toLowerCase();
+  return CATALOG.filter((p) =>
+    p.title.toLowerCase().includes(q) ||
+    p.description.toLowerCase().includes(q)
+  );
 }
 
-/** Returns the cheapest in-stock price across all stores for a product */
-export function getCheapestPrice(product) {
-  const inStock = product.stores.filter((s) => s.inStock);
-  if (!inStock.length) return null;
-  return inStock.reduce((min, s) => (s.price < min.price ? s : min));
+/** Returns a single product by id */
+export function getById(id) {
+  return CATALOG.find((p) => p.id === id) || null;
 }
