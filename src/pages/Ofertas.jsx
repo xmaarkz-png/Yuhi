@@ -1,243 +1,237 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import ProductCard from '../components/ProductCard';
-import PriceComparisonRow from '../components/PriceComparisonRow';
-import { compareAllSources, getMockResults } from '../services/api';
+import { useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import { getById, searchCatalog, getCheapestPrice, STORE_META } from "../data/catalog";
 
-const SOURCES = [
-  { id: 'all', label: 'Todos' },
-  { id: 'Amazon', label: '🛒 Amazon' },
-  { id: 'Google Shopping', label: '🛍️ Google' },
-  { id: 'AliExpress', label: '🏪 AliExpress' },
-  { id: 'eBay', label: '🔖 eBay' },
-];
-
-const SORT_OPTIONS = [
-  { id: 'price_asc', label: '💰 Menor precio' },
-  { id: 'price_desc', label: '💸 Mayor precio' },
-  { id: 'rating', label: '⭐ Valoración' },
-];
-
-export default function Ofertas() {
-  const [searchParams] = useSearchParams();
+// ── Comparison view: one product vs multiple stores ────────────────────────
+function ComparisonView({ product }) {
   const navigate = useNavigate();
 
-  const [query, setQuery] = useState(searchParams.get('q') || '');
-  const [inputVal, setInputVal] = useState(searchParams.get('q') || '');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [activeSource, setActiveSource] = useState('all');
-  const [sortBy, setSortBy] = useState('price_asc');
-  const [searched, setSearched] = useState(false);
-  const [usedMock, setUsedMock] = useState(false);
+  const sorted = [...product.stores].sort((a, b) => {
+    if (!a.inStock) return 1;
+    if (!b.inStock) return -1;
+    return a.price - b.price;
+  });
 
-  const doSearch = useCallback(async (q) => {
-    if (!q.trim()) return;
-    setLoading(true);
-    setError(null);
-    setSearched(true);
-    setUsedMock(false);
-
-    try {
-      let data = await compareAllSources(q);
-      if (data.length === 0) {
-        // Fall back to mock data so devs can see the UI
-        data = getMockResults(q);
-        setUsedMock(true);
-      }
-      setResults(data);
-    } catch (err) {
-      console.error(err);
-      // On API error, show mock results
-      setResults(getMockResults(q));
-      setUsedMock(true);
-      setError('Las APIs externas no están disponibles. Mostrando datos de ejemplo.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Auto-search from URL param
-  useEffect(() => {
-    const q = searchParams.get('q');
-    if (q) {
-      setInputVal(q);
-      setQuery(q);
-      doSearch(q);
-    }
-  }, [searchParams, doSearch]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const q = inputVal.trim();
-    if (!q) return;
-    setQuery(q);
-    navigate(`/ofertas?q=${encodeURIComponent(q)}`, { replace: true });
-    doSearch(q);
-  };
-
-  // Filter & sort
-  const filtered = results
-    .filter((r) => activeSource === 'all' || r.source === activeSource)
-    .sort((a, b) => {
-      if (sortBy === 'price_asc') {
-        if (a.price === null) return 1;
-        if (b.price === null) return -1;
-        return a.price - b.price;
-      }
-      if (sortBy === 'price_desc') {
-        if (a.price === null) return 1;
-        if (b.price === null) return -1;
-        return b.price - a.price;
-      }
-      if (sortBy === 'rating') {
-        return (b.rating || 0) - (a.rating || 0);
-      }
-      return 0;
-    });
-
-  const cheapest = filtered.find((r) => r.price !== null);
+  const cheapestIdx = sorted.findIndex((s) => s.inStock);
 
   return (
-    <div className="pb-20">
+    <div className="pb-20 min-h-screen" style={{ background: "#FBFCFF" }}>
       <Header subtitle="Comparador de precios" />
 
-      <div className="px-4 py-4">
-        {/* Search Form */}
-        <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
+      <div className="px-4 pt-4">
+        {/* Back */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1 text-sm mb-4"
+          style={{ color: "#1C6E8C" }}
+        >
+          ← Volver
+        </button>
+
+        {/* Product card */}
+        <div className="bg-white rounded-2xl overflow-hidden shadow-sm mb-5" style={{ border: "1px solid #D0CCD0" }}>
+          <div className="relative w-full h-52" style={{ background: "#f0f0f0" }}>
+            {product.image ? (
+              <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-6xl">🛍️</div>
+            )}
+            {product.badge && (
+              <span
+                className="absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-full"
+                style={{ background: "#FFA1C7", color: "#274156" }}
+              >
+                {product.badge}
+              </span>
+            )}
+          </div>
+          <div className="px-4 py-4">
+            <p className="font-bold text-base leading-snug mb-1" style={{ color: "#274156" }}>
+              {product.title}
+            </p>
+            <p className="text-sm" style={{ color: "#1C6E8C" }}>{product.description}</p>
+          </div>
+        </div>
+
+        {/* Store comparison list */}
+        <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#1C6E8C" }}>
+          Tiendas disponibles
+        </p>
+
+        <div className="flex flex-col gap-3">
+          {sorted.map((s, i) => {
+            const meta = STORE_META[s.store];
+            const isCheapest = i === cheapestIdx;
+
+            return (
+              <div
+                key={s.store}
+                className="rounded-2xl overflow-hidden"
+                style={{
+                  border: isCheapest ? "2px solid #1C6E8C" : "1px solid #D0CCD0",
+                  background: "#fff",
+                }}
+              >
+                <div className="flex items-center justify-between px-4 py-3">
+                  {/* Store info */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{meta?.icon}</span>
+                    <div>
+                      <p className="text-sm font-semibold" style={{ color: "#274156" }}>
+                        {meta?.name}
+                        {isCheapest && (
+                          <span
+                            className="ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={{ background: "#1C6E8C", color: "#fff" }}
+                          >
+                            MEJOR PRECIO
+                          </span>
+                        )}
+                      </p>
+                      {!s.inStock && (
+                        <p className="text-[11px]" style={{ color: "#FFA1C7" }}>Sin stock</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Price + button */}
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-lg" style={{ color: s.inStock ? "#1C6E8C" : "#D0CCD0" }}>
+                      {s.currency}{s.price.toFixed(2)}
+                    </span>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`text-xs font-semibold px-3 py-2 rounded-xl ${!s.inStock ? "pointer-events-none opacity-40" : ""}`}
+                      style={
+                        isCheapest && s.inStock
+                          ? { background: "#1C6E8C", color: "#fff" }
+                          : { background: "#274156", color: "#fff" }
+                      }
+                      onClick={(e) => !s.inStock && e.preventDefault()}
+                    >
+                      Ir →
+                    </a>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Catalog browse / search ───────────────────────────────────────────────────
+function CatalogBrowse() {
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+
+  const results = searchCatalog(query);
+
+  return (
+    <div className="pb-20 min-h-screen" style={{ background: "#FBFCFF" }}>
+      <Header subtitle="Comparador de precios" />
+
+      <div className="px-4 pt-4">
+        {/* Search within catalog */}
+        <div className="flex gap-2 mb-5">
           <input
             type="text"
-            value={inputVal}
-            onChange={(e) => setInputVal(e.target.value)}
-            placeholder="Buscar producto asiático…"
-            className="flex-1 rounded-2xl px-4 py-3 text-sm outline-none focus:ring-2" style={{background:'#D0CCD0',color:'#274156'}} onFocus={e=>e.target.style.outlineColor='#1C6E8C'}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar en el catálogo…"
+            className="flex-1 px-4 py-3 rounded-2xl text-sm outline-none"
+            style={{ background: "#D0CCD0", color: "#274156" }}
           />
-          <button
-            type="submit"
-            className="text-white px-5 py-3 rounded-2xl text-sm font-semibold transition-opacity hover:opacity-90" style={{background:'#1C6E8C'}}
-          >
-            🔍
-          </button>
-        </form>
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              className="px-4 py-3 rounded-2xl text-sm font-semibold"
+              style={{ background: "#D0CCD0", color: "#274156" }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
 
-        {/* API Status Banner */}
-        {usedMock && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-3 py-2 text-xs text-yellow-700 mb-3 flex items-start gap-2">
-            <span>⚠️</span>
-            <span>
-              <strong>Modo demo:</strong> {error || 'Sin claves API — mostrando datos de ejemplo.'}{' '}
-              Configura <code>VITE_TMAPI_KEY</code> y <code>VITE_SERPAPI_KEY</code> en tu .env para datos reales.
-            </span>
+        {results.length === 0 ? (
+          <div className="flex flex-col items-center py-16 gap-2 text-center">
+            <span className="text-5xl">🔍</span>
+            <p className="font-semibold" style={{ color: "#274156" }}>Sin resultados</p>
+            <p className="text-sm" style={{ color: "#1C6E8C" }}>Prueba con otro término</p>
           </div>
-        )}
-
-        {/* Loading */}
-        {loading && (
-          <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <div className="w-10 h-10 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin" />
-            <p className="text-gray-400 text-sm">Buscando en todas las tiendas…</p>
-          </div>
-        )}
-
-        {/* Results */}
-        {!loading && searched && (
-          <>
-            {results.length > 0 && (
-              <>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm text-gray-500">
-                    <span className="font-semibold text-gray-800">{filtered.length}</span> resultados para{' '}
-                    <span className="font-semibold" style={{color:'#1C6E8C'}}>"{query}"</span>
-                  </p>
-                </div>
-
-                {/* Price comparison strip */}
-                <PriceComparisonRow results={filtered} />
-
-                {/* Source filter tabs */}
-                <div className="flex gap-2 overflow-x-auto pb-1 mb-3 no-scrollbar">
-                  {SOURCES.map((s) => (
-                    <button
-                      key={s.id}
-                      onClick={() => setActiveSource(s.id)}
-                      className={`whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${
-                        activeSource === s.id
-                          ? 'text-white'
-                          : 'text-gray-500 hover:opacity-80'
-                      }`}
-                      style={activeSource === s.id ? {background:'#1C6E8C'} : {background:'#D0CCD0'}}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Sort */}
-                <div className="flex gap-2 overflow-x-auto pb-1 mb-4 no-scrollbar">
-                  {SORT_OPTIONS.map((s) => (
-                    <button
-                      key={s.id}
-                      onClick={() => setSortBy(s.id)}
-                      className={`whitespace-nowrap text-xs px-3 py-1 rounded-full border transition-colors ${
-                        sortBy === s.id
-                          ? ''
-                          : 'border-gray-200 text-gray-400 hover:border-gray-300'
-                      }`}
-                      style={sortBy === s.id ? {borderColor:'#FFA1C7',color:'#1C6E8C',background:'rgba(255,161,199,0.1)'} : {}}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Cards */}
-                <div className="grid grid-cols-1 gap-4">
-                  {filtered.map((product, i) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      showSource
-                      highlight={product === cheapest}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-
-            {results.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16 text-center gap-2">
-                <span className="text-5xl">🔍</span>
-                <p className="text-gray-600 font-semibold">Sin resultados</p>
-                <p className="text-gray-400 text-sm">Prueba con otro término de búsqueda</p>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Empty state */}
-        {!loading && !searched && (
-          <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
-            <span className="text-6xl">🛍️</span>
-            <p className="text-gray-700 font-semibold text-base">Compara precios al instante</p>
-            <p className="text-gray-400 text-sm max-w-xs">
-              Busca cualquier producto y encontraremos el mejor precio en Amazon, eBay, AliExpress y más.
-            </p>
-            <div className="flex flex-wrap justify-center gap-2 mt-2">
-              {['Ramen', 'Kimono', 'Figura Goku', 'Matcha'].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => { setInputVal(s); doSearch(s); setQuery(s); }}
-                  className="text-sm px-3 py-1.5 rounded-full transition-opacity hover:opacity-80" style={{background:'rgba(255,161,199,0.15)',color:'#1C6E8C'}}
+        ) : (
+          <div className="flex flex-col gap-4">
+            {results.map((product) => {
+              const cheapest = getCheapestPrice(product);
+              return (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-2xl overflow-hidden shadow-sm"
+                  style={{ border: "1px solid #D0CCD0" }}
                 >
-                  {s}
-                </button>
-              ))}
-            </div>
+                  <div className="relative w-full h-40" style={{ background: "#f0f0f0" }}>
+                    {product.image ? (
+                      <img src={product.image} alt={product.title} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-5xl">🛍️</div>
+                    )}
+                    {product.badge && (
+                      <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "#FFA1C7", color: "#274156" }}>
+                        {product.badge}
+                      </span>
+                    )}
+                  </div>
+                  <div className="px-4 py-3 flex flex-col gap-2">
+                    <p className="text-sm font-semibold leading-snug" style={{ color: "#274156" }}>{product.title}</p>
+                    <div className="flex items-center justify-between">
+                      <span>
+                        <span className="text-[10px]" style={{ color: "#D0CCD0" }}>Desde </span>
+                        <span className="font-bold" style={{ color: "#1C6E8C" }}>
+                          {cheapest ? `${cheapest.currency}${cheapest.price.toFixed(2)}` : "—"}
+                        </span>
+                      </span>
+                      <span className="text-xs" style={{ color: "#D0CCD0" }}>{product.stores.length} tiendas</span>
+                    </div>
+                    <button
+                      onClick={() => navigate(`/ofertas?product=${product.id}`)}
+                      className="w-full py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90"
+                      style={{ background: "#274156" }}
+                    >
+                      Comparar precios
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
     </div>
   );
+}
+
+// ── Main export ───────────────────────────────────────────────────────────────
+export default function Ofertas() {
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("product");
+
+  if (productId) {
+    const product = getById(productId);
+    if (!product) {
+      return (
+        <div className="pb-20 min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: "#FBFCFF" }}>
+          <span className="text-5xl">😕</span>
+          <p className="font-semibold" style={{ color: "#274156" }}>Producto no encontrado</p>
+        </div>
+      );
+    }
+    return <ComparisonView product={product} />;
+  }
+
+  return <CatalogBrowse />;
 }

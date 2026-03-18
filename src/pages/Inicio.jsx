@@ -1,104 +1,113 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
+import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import { getFeatured, getCheapestPrice } from "../data/catalog";
 
 const CATEGORIES = [
-  { id: 'merchandising', label: 'Merchandising', icon: '🎁', emoji: '🎌', color: 'bg-purple-50 border-purple-200' },
-  { id: 'alimentacion', label: 'Alimentación', icon: '🍜', emoji: '🍣', color: 'bg-orange-50 border-orange-200' },
-  { id: 'ropa', label: 'Ropa', icon: '👕', emoji: '👘', color: 'bg-blue-50 border-blue-200' },
-  { id: 'literatura', label: 'Literatura', icon: '📚', emoji: '📖', color: 'bg-green-50 border-green-200' },
-];
-
-const FEATURED_IMAGES = [
-  { src: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400', alt: 'Ramen' },
-  { src: 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=400', alt: 'Anime merch' },
-  { src: 'https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400', alt: 'Manga' },
+  {
+    id: "merchandising",
+    label: "Merchandising",
+    img: "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=300",
+  },
+  {
+    id: "alimentacion",
+    label: "Alimentación",
+    img: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300",
+  },
+  {
+    id: "ropa",
+    label: "Ropa",
+    img: "https://images.unsplash.com/photo-1564144006388-615f4deb6f57?w=300",
+  },
+  {
+    id: "literatura",
+    label: "Literatura",
+    img: "https://images.unsplash.com/photo-1589998059171-988d887df646?w=300",
+  },
 ];
 
 export default function Inicio() {
   const navigate = useNavigate();
-  const [featuredIdx] = useState(0);
+  const featured = getFeatured();
 
   return (
-    <div className="pb-20">
-      <Header subtitle="Tu tienda asiática & otaku" />
+    <div className="pb-20 min-h-screen" style={{ background: "#FBFCFF" }}>
+      <Header />
 
-      {/* Hero Banner */}
-      <div className="relative overflow-hidden">
-        <img
-          src={FEATURED_IMAGES[featuredIdx].src}
-          alt="Featured"
-          className="w-full h-44 object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
-          <span className="text-white font-bold text-lg leading-tight">
-            Descubre los mejores productos
-          </span>
-          <span className="text-pink-200 text-sm">directamente de Asia 🎌</span>
-        </div>
-      </div>
+      <div className="px-4 pt-5">
+        {/* Category grid */}
+        <h2 className="text-sm font-semibold mb-4" style={{ color: "#274156" }}>
+          Categorías
+        </h2>
 
-      {/* Search Bar */}
-      <div className="px-4 py-4">
-        <button
-          onClick={() => navigate('/ofertas')}
-          className="w-full flex items-center gap-3 bg-gray-100 hover:bg-gray-200 transition-colors rounded-2xl px-4 py-3 text-gray-400 text-sm"
-        >
-          <span className="text-lg">🔍</span>
-          <span>Buscar y comparar precios…</span>
-        </button>
-      </div>
-
-      {/* Categories */}
-      <section className="px-4">
-        <h2 className="text-base font-bold text-gray-800 mb-3">Categorías</h2>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 mb-7">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               onClick={() => navigate(`/categorias?cat=${cat.id}`)}
-              className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl border ${cat.color} hover:scale-105 transition-transform active:scale-95`}
+              className="rounded-2xl overflow-hidden shadow-sm bg-white text-left active:scale-95 transition-transform"
+              style={{ border: "1px solid #D0CCD0" }}
             >
-              <div className="w-14 h-14 rounded-full bg-white shadow-sm flex items-center justify-center text-3xl">
-                {cat.emoji}
+              <img
+                src={cat.img}
+                alt={cat.label}
+                className="w-full h-32 object-cover"
+              />
+              <div className="px-3 py-2">
+                <span className="text-sm font-medium" style={{ color: "#274156" }}>
+                  {cat.label}
+                </span>
               </div>
-              <span className="text-sm font-semibold text-gray-700">{cat.label}</span>
             </button>
           ))}
         </div>
-      </section>
 
-      {/* Quick Compare CTA */}
-      <section className="px-4 mt-6">
-        <div className="rounded-2xl p-4 text-white flex items-center justify-between" style={{background:'linear-gradient(135deg,#FFA1C7,#1C6E8C)'}}>
-          <div>
-            <p className="font-bold text-base">Compara precios</p>
-            <p className="text-white/70 text-xs mt-0.5">Amazon, eBay, AliExpress y más</p>
-          </div>
-          <button
-            onClick={() => navigate('/ofertas')}
-            className="font-bold text-sm px-4 py-2 rounded-xl hover:opacity-90 transition-opacity" style={{background:'#274156',color:'#FFA1C7'}}
-          >
-            Buscar →
-          </button>
-        </div>
-      </section>
+        {/* Featured products */}
+        <h2 className="text-sm font-semibold mb-4" style={{ color: "#274156" }}>
+          Destacados
+        </h2>
 
-      {/* Popular Searches */}
-      <section className="px-4 mt-6">
-        <h2 className="text-base font-bold text-gray-800 mb-3">Búsquedas populares</h2>
-        <div className="flex flex-wrap gap-2">
-          {['Ramen', 'Figura Naruto', 'Kimono', 'Manga One Piece', 'Matcha', 'Sake', 'Takoyaki'].map((term) => (
-            <button
-              key={term}
-              onClick={() => navigate(`/ofertas?q=${encodeURIComponent(term)}`)}
-              className="transition-colors text-sm px-3 py-1.5 rounded-full" style={{background:'#D0CCD0',color:'#274156'}}
-            >
-              {term}
-            </button>
-          ))}
+        <div className="flex flex-col gap-3">
+          {featured.map((product) => {
+            const cheapest = getCheapestPrice(product);
+            return (
+              <div
+                key={product.id}
+                className="bg-white rounded-2xl flex overflow-hidden"
+                style={{ border: "1px solid #D0CCD0" }}
+              >
+                {/* Thumb */}
+                <div className="w-24 h-24 shrink-0" style={{ background: "#f0f0f0" }}>
+                  {product.image ? (
+                    <img src={product.image} alt={product.title} className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-3xl">🛍️</div>
+                  )}
+                </div>
+                {/* Info */}
+                <div className="flex-1 px-3 py-3 flex flex-col justify-between min-w-0">
+                  <div>
+                    <p className="text-sm font-semibold leading-snug line-clamp-2" style={{ color: "#274156" }}>
+                      {product.title}
+                    </p>
+                    <p className="text-xs mt-0.5" style={{ color: "#1C6E8C" }}>
+                      <span style={{ color: "#D0CCD0" }}>Desde </span>
+                      <strong>{cheapest ? `${cheapest.currency}${cheapest.price.toFixed(2)}` : "—"}</strong>
+                      <span className="ml-2" style={{ color: "#D0CCD0" }}>· {product.stores.length} tiendas</span>
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => navigate(`/ofertas?product=${product.id}`)}
+                    className="mt-2 text-xs font-semibold px-3 py-1.5 rounded-xl text-white self-start"
+                    style={{ background: "#1C6E8C" }}
+                  >
+                    Comparar →
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </section>
+      </div>
     </div>
   );
 }

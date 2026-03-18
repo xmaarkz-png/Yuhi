@@ -13,8 +13,10 @@ const SERPAPI_BASE = '/api/serpapi';
 // Store your keys in a .env file:
 //   VITE_TMAPI_KEY=your_key
 //   VITE_SERPAPI_KEY=your_key
+//   VITE_AMAZON_AFFILIATE_TAG=your_tag
 const TMAPI_KEY = import.meta.env.VITE_TMAPI_KEY || '';
 const SERPAPI_KEY = import.meta.env.VITE_SERPAPI_KEY || '';
+const AMAZON_TAG = import.meta.env.VITE_AMAZON_AFFILIATE_TAG || 'yuhi-20';
 
 // ─── TMAPI — Amazon product detail by URL ────────────────────────────────────
 export async function fetchAmazonByUrl(productUrl) {
@@ -110,14 +112,14 @@ function parsePrice(val) {
 
 /**
  * Appends a simple referral/affiliate tag to outbound URLs.
- * Replace tag values with your actual affiliate IDs.
+ * Uses VITE_AMAZON_AFFILIATE_TAG from .env
  */
 function buildAffiliateUrl(url, store) {
   if (!url) return '#';
   try {
     const u = new URL(url);
     if (store === 'amazon') {
-      u.searchParams.set('tag', 'yuhi-21'); // Amazon Associates tag
+      u.searchParams.set('tag', AMAZON_TAG);
     }
     return u.toString();
   } catch {
