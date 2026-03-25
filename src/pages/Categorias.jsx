@@ -18,11 +18,11 @@ export default function Categorias() {
   const products = getByCategory(activecat);
 
   return (
-    <div className="pb-20 min-h-screen" style={{ background: "#FBFCFF" }}>
+    <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
       <Header />
 
       {/* Tab bar */}
-      <div className="flex gap-2 px-4 pt-4 overflow-x-auto no-scrollbar">
+      <div className="flex gap-2 px-4 pt-4 overflow-x-auto no-scrollbar lg:max-w-6xl lg:mx-auto lg:px-10 lg:pt-6 lg:gap-3">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
@@ -39,7 +39,7 @@ export default function Categorias() {
         ))}
       </div>
 
-      <div className="px-4 pt-4 flex flex-col gap-4">
+      <div className="px-4 pt-4 flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-5 lg:max-w-6xl lg:mx-auto lg:px-10 lg:pb-8">
         {products.map((product) => {
           const cheapest = getCheapestPrice(product);
           return (

@@ -22,10 +22,11 @@ export default function Login() {
   };
 
   return (
-    <div className="pb-20 min-h-screen" style={{ background: "#FBFCFF" }}>
+    <div className="pb-20 min-h-screen lg:pb-0 lg:flex lg:flex-col" style={{ background: "#FBFCFF" }}>
       <Header />
 
-      <div className="px-4 pt-10 flex flex-col gap-3">
+      <div className="px-4 pt-10 flex flex-col gap-3 lg:flex-1 lg:flex lg:items-center lg:justify-center">
+        <div className="flex flex-col gap-3 w-full lg:bg-white lg:rounded-3xl lg:shadow-xl lg:px-10 lg:py-10 lg:max-w-sm">
         <input
           type="text"
           name="usuario"
@@ -63,6 +64,7 @@ export default function Login() {
         >
           Registro
         </button>
+        </div>
       </div>
     </div>
   );

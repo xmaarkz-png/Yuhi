@@ -30,16 +30,16 @@ export default function Inicio() {
   const featured = getFeatured();
 
   return (
-    <div className="pb-20 min-h-screen" style={{ background: "#FBFCFF" }}>
+    <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
       <Header />
 
-      <div className="px-4 pt-5">
+      <div className="px-4 pt-5 lg:max-w-6xl lg:mx-auto lg:px-10 lg:pt-8">
         {/* Category grid */}
-        <h2 className="text-sm font-semibold mb-4" style={{ color: "#274156" }}>
+        <h2 className="text-sm font-semibold mb-4 lg:text-base" style={{ color: "#274156" }}>
           Categorías
         </h2>
 
-        <div className="grid grid-cols-2 gap-3 mb-7">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-7">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
@@ -50,7 +50,7 @@ export default function Inicio() {
               <img
                 src={cat.img}
                 alt={cat.label}
-                className="w-full h-32 object-cover"
+                className="w-full h-32 lg:h-44 object-cover"
               />
               <div className="px-3 py-2">
                 <span className="text-sm font-medium" style={{ color: "#274156" }}>
@@ -62,21 +62,21 @@ export default function Inicio() {
         </div>
 
         {/* Featured products */}
-        <h2 className="text-sm font-semibold mb-4" style={{ color: "#274156" }}>
+        <h2 className="text-sm font-semibold mb-4 lg:text-base" style={{ color: "#274156" }}>
           Destacados
         </h2>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 lg:grid lg:grid-cols-3">
           {featured.map((product) => {
             const cheapest = getCheapestPrice(product);
             return (
               <div
                 key={product.id}
-                className="bg-white rounded-2xl flex overflow-hidden"
+                className="bg-white rounded-2xl flex overflow-hidden lg:flex-col"
                 style={{ border: "1px solid #D0CCD0" }}
               >
                 {/* Thumb */}
-                <div className="w-24 h-24 shrink-0" style={{ background: "#f0f0f0" }}>
+                <div className="w-24 h-24 shrink-0 lg:w-full lg:h-44" style={{ background: "#f0f0f0" }}>
                   {product.image ? (
                     <img src={product.image} alt={product.title} className="w-full h-full object-cover" loading="lazy" />
                   ) : (

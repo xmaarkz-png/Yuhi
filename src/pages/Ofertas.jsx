@@ -16,10 +16,10 @@ function ComparisonView({ product }) {
   const cheapestIdx = sorted.findIndex((s) => s.inStock);
 
   return (
-    <div className="pb-20 min-h-screen" style={{ background: "#FBFCFF" }}>
+    <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
       <Header subtitle="Comparador de precios" />
 
-      <div className="px-4 pt-4">
+      <div className="px-4 pt-4 lg:max-w-5xl lg:mx-auto lg:px-10 lg:pt-6">
         {/* Back */}
         <button
           onClick={() => navigate(-1)}
@@ -29,8 +29,9 @@ function ComparisonView({ product }) {
           ← Volver
         </button>
 
+        <div className="lg:flex lg:gap-10 lg:items-start">
         {/* Product card */}
-        <div className="bg-white rounded-2xl overflow-hidden shadow-sm mb-5" style={{ border: "1px solid #D0CCD0" }}>
+        <div className="bg-white rounded-2xl overflow-hidden shadow-sm mb-5 lg:mb-0 lg:w-72 lg:shrink-0" style={{ border: "1px solid #D0CCD0" }}>
           <div className="relative w-full h-52" style={{ background: "#f0f0f0" }}>
             {product.image ? (
               <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
@@ -55,6 +56,7 @@ function ComparisonView({ product }) {
         </div>
 
         {/* Store comparison list */}
+        <div className="lg:flex-1">
         <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#1C6E8C" }}>
           Tiendas disponibles
         </p>
@@ -119,8 +121,8 @@ function ComparisonView({ product }) {
               </div>
             );
           })}
-        </div>
-      </div>
+        </div>        </div>
+        </div>      </div>
     </div>
   );
 }
@@ -133,10 +135,10 @@ function CatalogBrowse() {
   const results = searchCatalog(query);
 
   return (
-    <div className="pb-20 min-h-screen" style={{ background: "#FBFCFF" }}>
+    <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
       <Header subtitle="Comparador de precios" />
 
-      <div className="px-4 pt-4">
+      <div className="px-4 pt-4 lg:max-w-6xl lg:mx-auto lg:px-10 lg:pt-6">
         {/* Search within catalog */}
         <div className="flex gap-2 mb-5">
           <input
@@ -165,7 +167,7 @@ function CatalogBrowse() {
             <p className="text-sm" style={{ color: "#1C6E8C" }}>Prueba con otro término</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:gap-5">
             {results.map((product) => {
               const cheapest = getCheapestPrice(product);
               return (

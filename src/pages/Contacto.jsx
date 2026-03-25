@@ -7,14 +7,15 @@ export default function Contacto() {
   const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   return (
-    <div className="pb-20 min-h-screen" style={{ background: "#FBFCFF" }}>
+    <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
       <Header />
 
-      <div className="px-4 pt-5">
-        <h2 className="text-base font-semibold mb-4" style={{ color: "#274156" }}>Contacto</h2>
+      <div className="px-4 pt-5 lg:max-w-4xl lg:mx-auto lg:px-10 lg:pt-8">
+        <h2 className="text-base font-semibold mb-4 lg:text-xl lg:mb-8" style={{ color: "#274156" }}>Contacto</h2>
 
+        <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:items-start">
         {/* Info */}
-        <div className="flex flex-col gap-3 mb-6">
+        <div className="flex flex-col gap-3 mb-6 lg:mb-0">
           {[
             { icon: "📞", label: "Telefono", value: "+34 123 456 789" },
             { icon: "📍", label: "Direccion", value: "Calle Yuhi, 12, Zaragoza" },
@@ -30,6 +31,7 @@ export default function Contacto() {
           ))}
         </div>
 
+        <div>
         {sent ? (
           <div className="flex flex-col items-center py-12 gap-3 text-center">
             <span className="text-5xl">✅</span>
@@ -75,6 +77,8 @@ export default function Contacto() {
             </button>
           </form>
         )}
+        </div>
+        </div>
       </div>
     </div>
   );
