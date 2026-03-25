@@ -13,22 +13,24 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 lg:hidden"
+      className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50"
       style={{ background: '#FBFCFF', borderTop: '1px solid #D0CCD0' }}
     >
-      <div className="flex items-center justify-around h-16">
+      <div className="flex items-center justify-around h-20">
         {NAV_ITEMS.map(({ path, label, icon }) => {
           const active = pathname === path || (path !== '/' && pathname.startsWith(path));
           return (
             <Link
               key={path}
               to={path}
-              className="flex flex-col items-center gap-0.5 flex-1 py-2"
+              className="flex flex-col items-center gap-1 flex-1 py-2 transition-all hover:scale-110 active:scale-95"
             >
-              <span className="text-xl leading-none">{icon}</span>
+              <span className={`text-3xl transition-transform ${active ? 'scale-125' : ''}`}>
+                {icon}
+              </span>
               <span
-                className="text-[10px] font-medium"
-                style={{ color: active ? '#1C6E8C' : '#D0CCD0' }}
+                className="text-xs font-bold text-center px-1"
+                style={{ color: active ? '#FFA1C7' : '#D0CCD0' }}
               >
                 {label}
               </span>
