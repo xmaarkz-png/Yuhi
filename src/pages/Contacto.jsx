@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Header from "../components/Header";
+import AuthButton from "../components/AuthButton";
 
 export default function Contacto() {
   const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
@@ -68,13 +69,9 @@ export default function Contacto() {
               className="w-full px-4 py-3 rounded-2xl text-sm outline-none resize-none"
               style={{ background: "#D0CCD0", color: "#274156" }}
             />
-            <button
-              type="submit"
-              className="w-full py-3 rounded-2xl text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-              style={{ background: "#274156" }}
-            >
+            <AuthButton type="submit" variant="primary">
               Enviar Mensaje ✈️
-            </button>
+            </AuthButton>
           </form>
         )}
         </div>

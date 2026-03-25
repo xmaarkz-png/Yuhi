@@ -14,7 +14,11 @@ export default function BottomNav() {
   return (
     <nav
       className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50"
-      style={{ background: '#FBFCFF', borderTop: '1px solid #D0CCD0' }}
+      style={{ 
+        background: '#FBFCFF', 
+        borderTop: '3px solid #FFA1C7',
+        boxShadow: '0 -8px 32px rgba(255, 161, 199, 0.15)'
+      }}
     >
       <div className="flex items-center justify-around h-20">
         {NAV_ITEMS.map(({ path, label, icon }) => {
