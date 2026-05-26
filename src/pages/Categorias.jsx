@@ -2,14 +2,15 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
+import Footer from "../components/Footer";
 import { getByCategory, getCheapestPrice, STORE_META } from "../data/catalog";
-import { compareAllSources, getMockResults } from "../services/api";
+import { searchTaobaoProducts } from "../services/elimApi";
 
 const CATEGORIES = [
-  { id: "merchandising", label: "Merchandising", emoji: "🎬", color: "#9f1239", searchQuery: "anime figures manga" },
-  { id: "alimentacion",  label: "Alimentación",  emoji: "🍜", color: "#b45309", searchQuery: "japanese ramen anime snacks" },
-  { id: "ropa",          label: "Ropa",          emoji: "👕", color: "#0369a1", searchQuery: "anime t-shirt manga hoodie" },
-  { id: "literatura",    label: "Literatura",    emoji: "📚", color: "#6f46c1", searchQuery: "manga books japanese comic" },
+  { id: "merchandising", label: "Merchandising", emoji: "", color: "#9f1239", searchQuery: "anime figure" },
+  { id: "alimentacion",  label: "Alimentación",  emoji: "", color: "#b45309", searchQuery: "japanese snack" },
+  { id: "ropa",          label: "Ropa",          emoji: "", color: "#0369a1", searchQuery: "anime hoodie" },
+  { id: "literatura",    label: "Literatura",    emoji: "", color: "#6f46c1", searchQuery: "manga book" },
 ];
 
 export default function Categorias() {
@@ -28,12 +29,14 @@ export default function Categorias() {
 
     const fetchProducts = async () => {
       setLoading(true);
+      setApiProducts([]); // Limpiamos resultados anteriores al empezar
       try {
-        const results = await compareAllSources(cat.searchQuery);
+        const results = await searchTaobaoProducts(cat.searchQuery);
+        console.log(`[API Elim] Resultados para ${cat.label}:`, results);
         setApiProducts(results.slice(0, 6));
       } catch (error) {
         console.error("Error fetching products:", error);
-        setApiProducts(getMockResults(cat.searchQuery).slice(0, 6));
+        setApiProducts([]);
       } finally {
         setLoading(false);
       }
@@ -66,7 +69,6 @@ export default function Categorias() {
         }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <span className="text-5xl">{activeCat?.emoji}</span>
           <div>
             <h1 className="text-3xl font-bold" style={{ color: "#274156" }}>
               {activeCat?.label}
@@ -101,7 +103,7 @@ export default function Categorias() {
         {catalogProducts.length > 0 && (
           <div>
             <h2 className="text-lg font-bold mb-4" style={{ color: "#274156" }}>
-              💝 Recomendados
+              RECOMENDADOS
             </h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
               {catalogProducts.map((product) => {
@@ -114,7 +116,7 @@ export default function Categorias() {
                       url: cheapest.url,
                       inStock: cheapest.inStock,
                       source: STORE_META[cheapest.store]?.name || cheapest.store,
-                      sourceIcon: STORE_META[cheapest.store]?.icon || '🛍️',
+                      sourceIcon: STORE_META[cheapest.store]?.icon || '',
                       store: cheapest.store,
                     }
                   : null;
@@ -128,54 +130,40 @@ export default function Categorias() {
         )}
 
         {/* API products section */}
-        {apiProducts.length > 0 && (
-          <div>
-            <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: "#274156" }}>
-              {loading ? "🔄 Actualizando..." : "📱 Más opciones"}
-            </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
-              {apiProducts.map((product) => (
-                <a
-                  key={`${product.source}-${product.id}`}
-                  href={product.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-lg active:scale-95 transition-all flex flex-col"
-                  style={{ border: "2px solid #D0CCD0", textDecoration: "none" }}
-                >
-                  <div className="w-full h-36 shrink-0" style={{ background: "#f0f0f0" }}>
-                    {product.image ? (
-                      <img src={product.image} alt={product.title} className="w-full h-full object-cover" loading="lazy" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-4xl">{product.sourceIcon}</div>
-                    )}
-                  </div>
-                  <div className="p-4 flex flex-col justify-between flex-1">
-                    <div>
-                      <p className="text-xs font-bold mb-1" style={{ color: "#1C6E8C" }}>
-                        {product.sourceIcon} {product.source}
-                      </p>
-                      <p className="text-sm font-black line-clamp-2" style={{ color: "#274156", letterSpacing: '0.01em' }}>
-                        {product.title}
-                      </p>
-                    </div>
-                    <p className="text-lg font-black mt-2" style={{ color: activeCat?.color }}>
-                      {product.currency}{product.price?.toFixed(2) || "—"}
-                    </p>
-                  </div>
-                </a>
+        <div className="mt-4">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2 uppercase tracking-tight" style={{ color: "#274156" }}>
+            {loading ? "Buscando en Taobao..." : "Más opciones (Importación)"}
+          </h2>
+          
+          {loading ? (
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 animate-pulse">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="bg-slate-100 h-64 rounded-3xl border border-slate-200" />
               ))}
             </div>
-          </div>
-        )}
+          ) : apiProducts.length > 0 ? (
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+              {apiProducts.map((product) => (
+                <ProductCard
+                  key={`${product.source}-${product.id}`}
+                  product={product}
+                  highlight={false}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-400 italic">No se encontraron productos adicionales en esta categoría.</p>
+          )}
+        </div>
 
         {!loading && catalogProducts.length === 0 && apiProducts.length === 0 && (
-          <div className="flex flex-col items-center py-16 gap-3 text-center">
-            <span className="text-6xl">🔍</span>
+          <div className="flex flex-col items-center py-24 gap-3 text-center">
+            <div className="w-12 h-12 border-4 border-slate-200 border-t-[#1C6E8C] rounded-full animate-spin mb-4"></div>
             <p className="font-bold text-lg" style={{ color: "#274156" }}>Cargando productos...</p>
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

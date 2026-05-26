@@ -3,12 +3,14 @@ import { useCart } from '../context/CartContext';
 import yuhuLogo from '../assets/Yuhi logo web.png';
 
 const NAV_ITEMS = [
-  { path: '/',           label: 'Inicio',     icon: '🏠' },
-  { path: '/categorias', label: 'Categorías', icon: '📦' },
-  { path: '/ofertas',    label: 'Ofertas',    icon: '🏷️' },
-  { path: '/carrito',    label: 'Carrito',    icon: '🛒' },
-  { path: '/contacto',   label: 'Contacto',   icon: '💬' },
-  { path: '/login',      label: 'Cuenta',     icon: '👤' },
+  { path: '/',           label: 'Inicio',     icon: '' },
+  { path: '/categorias', label: 'Categorías', icon: '' },
+  { path: '/ofertas',    label: 'Ofertas',    icon: '' },
+  { path: '/comparar',   label: 'Comparador',       icon: '' },
+  { path: '/wishlist',   label: 'Favoritos',  icon: '' },
+  { path: '/carrito',    label: 'Carrito',    icon: '' },
+  { path: '/contacto',   label: 'Contacto',   icon: '' },
+  { path: '/login',      label: 'Cuenta',     icon: '' },
 ];
 
 export default function Header({ subtitle }) {

@@ -17,12 +17,13 @@
  */
 
 export const STORE_META = {
-  amazon:     { name: 'Amazon',     icon: '🛒' },
-  aliexpress: { name: 'AliExpress', icon: '🛍️' },
-  cdjapan:    { name: 'CDJapan',    icon: '🇯🇵' },
-  ebay:       { name: 'eBay',       icon: '📦' },
-  rakuten:    { name: 'Rakuten',    icon: '🏪' },
-  jlist:      { name: 'J-List',     icon: '🎌' },
+  amazon:     { name: 'Amazon',     icon: '' },
+  aliexpress: { name: 'AliExpress', icon: '' },
+  cdjapan:    { name: 'CDJapan',    icon: '' },
+  ebay:       { name: 'eBay',       icon: '' },
+  rakuten:    { name: 'Rakuten',    icon: '' },
+  jlist:      { name: 'J-List',     icon: '' },
+  elimapi:    { name: 'Taobao',     icon: '' },
 };
 
 export const CATALOG = [

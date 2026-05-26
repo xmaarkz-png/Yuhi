@@ -3,12 +3,11 @@ import { useCart } from '../context/CartContext';
 import yuhuLogo from '../assets/Yuhi logo web.png';
 
 const NAV_ITEMS = [
-  { path: '/', label: 'Inicio', icon: '🏠' },
-  { path: '/categorias', label: 'Categorías', icon: '📦' },
-  { path: '/ofertas', label: 'Ofertas', icon: '🏷️' },
-  { path: '/carrito', label: 'Carrito', icon: '🛒' },
-  { path: '/contacto', label: 'Contacto', icon: '💬' },
-  { path: '/login', label: 'Login', icon: '👤' },
+  { path: '/', label: 'Inicio', icon: '' },
+  { path: '/categorias', label: 'Categorías', icon: '' },
+  { path: '/wishlist', label: 'Favoritos', icon: '' },
+  { path: '/carrito', label: 'Carrito', icon: '' },
+  { path: '/login', label: 'Login', icon: '' },
 ];
 
 export default function BottomNav() {
@@ -43,19 +42,16 @@ export default function BottomNav() {
               to={path}
               className="flex flex-col items-center gap-1 flex-1 py-2 transition-all hover:scale-110 active:scale-95 relative min-w-fit"
             >
-              <span className={`text-3xl transition-transform ${active ? 'scale-125' : ''}`}>
-                {icon}
-              </span>
               {isCart && cartCount > 0 && (
-                <span
-                  className="absolute -top-1 -right-2 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center text-white"
+                <span 
+                  className="absolute top-2 right-4 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center text-white"
                   style={{ background: '#FFA1C7' }}
                 >
                   {cartCount}
                 </span>
               )}
               <span
-                className="text-xs font-bold text-center px-1"
+                className="text-[10px] font-bold text-center px-1 uppercase tracking-tighter"
                 style={{ color: active ? '#FFA1C7' : '#D0CCD0' }}
               >
                 {label}
@@ -67,6 +63,3 @@ export default function BottomNav() {
     </nav>
   );
 }
-
-
-

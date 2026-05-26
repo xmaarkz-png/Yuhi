@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import AuthButton from "../components/AuthButton";
 import ProductCard from "../components/ProductCard";
+import Footer from "../components/Footer";
 import { getById, searchCatalog, getCheapestPrice, STORE_META } from "../data/catalog";
 
 // ── Comparison view: one product vs multiple stores ────────────────────────
@@ -38,7 +39,7 @@ function ComparisonView({ product }) {
             {product.image ? (
               <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-6xl">🛍️</div>
+              <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-300 text-[10px] uppercase font-bold">Sin imagen</div>
             )}
             {product.badge && (
               <span
@@ -164,7 +165,7 @@ function CatalogBrowse() {
 
         {results.length === 0 ? (
           <div className="flex flex-col items-center py-16 gap-2 text-center">
-            <span className="text-5xl">🔍</span>
+            <div className="w-16 h-1 bg-slate-200 mb-4"></div>
             <p className="font-semibold" style={{ color: "#274156" }}>Sin resultados</p>
             <p className="text-sm" style={{ color: "#1C6E8C" }}>Prueba con otro término</p>
           </div>
@@ -180,7 +181,7 @@ function CatalogBrowse() {
                     url: cheapest.url,
                     inStock: cheapest.inStock,
                     source: STORE_META[cheapest.store]?.name || cheapest.store,
-                    sourceIcon: STORE_META[cheapest.store]?.icon || '🛍️',
+                    sourceIcon: STORE_META[cheapest.store]?.icon || '',
                     store: cheapest.store,
                   }
                 : product;
@@ -203,14 +204,26 @@ export default function Ofertas() {
     const product = getById(productId);
     if (!product) {
       return (
-        <div className="pb-20 min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: "#FBFCFF" }}>
-          <span className="text-5xl">😕</span>
-          <p className="font-semibold" style={{ color: "#274156" }}>Producto no encontrado</p>
-        </div>
+        <>
+          <div className="pb-20 min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: "#FBFCFF" }}>
+            <p className="font-semibold" style={{ color: "#274156" }}>Producto no encontrado</p>
+          </div>
+          <Footer />
+        </>
       );
     }
-    return <ComparisonView product={product} />;
+    return (
+      <>
+        <ComparisonView product={product} />
+        <Footer />
+      </>
+    );
   }
 
-  return <CatalogBrowse />;
+  return (
+    <>
+      <CatalogBrowse />
+      <Footer />
+    </>
+  );
 }

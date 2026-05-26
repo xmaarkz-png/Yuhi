@@ -8,14 +8,17 @@
 
 const TMAPI_BASE = '/api/tmapi';
 const SERPAPI_BASE = '/api/serpapi';
+const ELIMAPI_BASE = '/api/elimapi';
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 // Store your keys in a .env file:
 //   VITE_TMAPI_KEY=your_key
 //   VITE_SERPAPI_KEY=your_key
+//   VITE_ELIMAPI_KEY=c873a0b1df40c3818f917ed3001a3cf007102f5f
 //   VITE_AMAZON_AFFILIATE_TAG=your_tag
 const TMAPI_KEY = import.meta.env.VITE_TMAPI_KEY || '';
 const SERPAPI_KEY = import.meta.env.VITE_SERPAPI_KEY || '';
+const ELIMAPI_KEY = import.meta.env.VITE_ELIMAPI_KEY || '';
 const AMAZON_TAG = import.meta.env.VITE_AMAZON_AFFILIATE_TAG || 'yuhi00-21';
 
 // ─── TMAPI — Amazon product detail by URL ────────────────────────────────────
@@ -64,6 +67,23 @@ export async function searchGoogleShopping(keyword) {
   return items.slice(0, 6).map(normalizeSerpapi);
 }
 
+// ─── Elimapi — Taobao/1688 search ──────────────────────────────────────────
+export async function searchElimapi(keyword) {
+  if (!ELIMAPI_KEY) {
+    console.warn('No VITE_ELIMAPI_KEY set — Elimapi results skipped');
+    return [];
+  }
+  const params = new URLSearchParams({
+    q: keyword,
+    api_key: ELIMAPI_KEY,
+  });
+  const res = await fetch(`${ELIMAPI_BASE}/products/search?${params}`);
+  if (!res.ok) throw new Error(`Elimapi error: ${res.status}`);
+  const data = await res.json();
+  const items = data?.products || data?.items || [];
+  return items.slice(0, 6).map(normalizeElimapi);
+}
+
 // ─── Normalizers ─────────────────────────────────────────────────────────────
 function normalizeTmapi(raw, url) {
   return {
@@ -95,6 +115,24 @@ function normalizeSerpapi(raw) {
     rating: raw.rating || null,
     reviews: raw.reviews || 0,
     url: buildAffiliateUrl(raw.link || raw.product_link, 'google'),
+    currency: '€',
+    inStock: true,
+    badge: null,
+  };
+}
+
+function normalizeElimapi(raw) {
+  return {
+    id: raw.product_id || raw.id,
+    source: 'Taobao',
+    sourceIcon: '🇨🇳',
+    title: raw.title,
+    price: parsePrice(raw.price),
+    originalPrice: parsePrice(raw.original_price),
+    image: raw.main_image || raw.thumbnail || '',
+    rating: raw.rating || null,
+    reviews: raw.reviews_count || 0,
+    url: raw.url || '#',
     currency: '€',
     inStock: true,
     badge: null,
@@ -136,6 +174,7 @@ export async function compareAllSources(keyword) {
   const results = await Promise.allSettled([
     searchAmazon(keyword),
     searchGoogleShopping(keyword),
+    searchElimapi(keyword),
   ]);
 
   const all = [];
