@@ -42,20 +42,20 @@ export default function Inicio() {
     <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
       <Header />
 
-      <div className="px-4 pt-8 pb-6">
+      <div className="px-4 pt-8 pb-6 mx-auto lg:px-10">
         {/* Category grid */}
         <div className="mb-8">
           <h2 className="text-2xl font-black mb-5" style={{ color: "#274156" }}>
             📂 Categorías
           </h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => navigate(`/categorias?cat=${cat.id}`)}
                 className="rounded-3xl overflow-hidden shadow-lg hover:shadow-xl active:scale-95 transition-all relative group"
-                style={{ aspectRatio: "1 / 1.1" }}
+                style={{ aspectRatio: "1 / 0.85" }}
               >
                 <img
                   src={cat.img}
@@ -81,7 +81,7 @@ export default function Inicio() {
             ⭐ Destacados
           </h2>
 
-          <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
             {featured.map((product) => {
               const cheapest = getCheapestPrice(product);
               const featuredCard = cheapest

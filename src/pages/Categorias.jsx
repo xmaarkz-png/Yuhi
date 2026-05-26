@@ -96,14 +96,14 @@ export default function Categorias() {
         </div>
       </div>
 
-      <div className="px-4 pt-6 pb-4 flex flex-col gap-6">
+      <div className="px-4 pt-6 pb-4 lg:px-10 flex flex-col gap-6">
         {/* Catalog products section */}
         {catalogProducts.length > 0 && (
           <div>
             <h2 className="text-lg font-bold mb-4" style={{ color: "#274156" }}>
               💝 Recomendados
             </h2>
-            <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
               {catalogProducts.map((product) => {
                 const cheapest = getCheapestPrice(product);
                 const featuredCard = cheapest
@@ -133,37 +133,35 @@ export default function Categorias() {
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: "#274156" }}>
               {loading ? "🔄 Actualizando..." : "📱 Más opciones"}
             </h2>
-            <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
               {apiProducts.map((product) => (
                 <a
                   key={`${product.source}-${product.id}`}
                   href={product.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-lg active:scale-95 transition-all"
+                  className="bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-lg active:scale-95 transition-all flex flex-col"
                   style={{ border: "2px solid #D0CCD0", textDecoration: "none" }}
                 >
-                  <div className="flex gap-4 p-4">
-                    <div className="w-24 h-24 shrink-0 rounded-2xl" style={{ background: "#f0f0f0" }}>
-                      {product.image ? (
-                        <img src={product.image} alt={product.title} className="w-full h-full object-cover rounded-2xl" loading="lazy" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-4xl">{product.sourceIcon}</div>
-                      )}
-                    </div>
-                    <div className="flex-1 flex flex-col justify-between">
-                      <div>
-                        <p className="text-xs font-bold mb-1" style={{ color: "#1C6E8C" }}>
-                          {product.sourceIcon} {product.source}
-                        </p>
-                        <p className="text-base font-black line-clamp-2" style={{ color: "#274156", letterSpacing: '0.01em' }}>
-                          {product.title}
-                        </p>
-                      </div>
-                      <p className="text-lg font-black" style={{ color: activeCat?.color }}>
-                        {product.currency}{product.price?.toFixed(2) || "—"}
+                  <div className="w-full h-36 shrink-0" style={{ background: "#f0f0f0" }}>
+                    {product.image ? (
+                      <img src={product.image} alt={product.title} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-4xl">{product.sourceIcon}</div>
+                    )}
+                  </div>
+                  <div className="p-4 flex flex-col justify-between flex-1">
+                    <div>
+                      <p className="text-xs font-bold mb-1" style={{ color: "#1C6E8C" }}>
+                        {product.sourceIcon} {product.source}
+                      </p>
+                      <p className="text-sm font-black line-clamp-2" style={{ color: "#274156", letterSpacing: '0.01em' }}>
+                        {product.title}
                       </p>
                     </div>
+                    <p className="text-lg font-black mt-2" style={{ color: activeCat?.color }}>
+                      {product.currency}{product.price?.toFixed(2) || "—"}
+                    </p>
                   </div>
                 </a>
               ))}

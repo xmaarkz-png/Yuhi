@@ -21,7 +21,7 @@ function ComparisonView({ product }) {
     <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
       <Header subtitle="Comparador de precios" />
 
-      <div className="px-4 pt-4 lg:max-w-5xl lg:mx-auto lg:px-10 lg:pt-6">
+      <div className="px-4 pt-4 lg:px-10 lg:pt-6">
         {/* Back */}
         <button
           onClick={() => navigate(-1)}
@@ -140,7 +140,7 @@ function CatalogBrowse() {
     <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
       <Header subtitle="Comparador de precios" />
 
-      <div className="px-4 pt-4 lg:max-w-6xl lg:mx-auto lg:px-10 lg:pt-6">
+      <div className="px-4 pt-4 lg:px-10 lg:pt-6">
         {/* Search within catalog */}
         <div className="flex gap-2 mb-5">
           <input
