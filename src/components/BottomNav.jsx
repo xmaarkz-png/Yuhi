@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import yuhuLogo from '/dist/assets/Yuhi logo web-C5O6J2IR.png';
+import yuhuLogo from '../assets/Yuhi logo web.png';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Inicio', icon: '🏠' },

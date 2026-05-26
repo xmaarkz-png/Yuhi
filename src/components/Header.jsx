@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import yuhuLogo from '/dist/assets/Yuhi logo web-C5O6J2IR.png';
+import yuhuLogo from '../assets/Yuhi logo web.png';
 
 export default function Header({ subtitle }) {
   return (
