@@ -5,8 +5,11 @@ import yuhuLogo from '../assets/Yuhi logo web.png';
 const NAV_ITEMS = [
   { path: '/', label: 'Inicio', icon: '' },
   { path: '/categorias', label: 'Categorías', icon: '' },
+  { path: '/ofertas', label: 'Ofertas', icon: '' },
+  { path: '/comparar', label: 'Comparador', icon: '' },
   { path: '/wishlist', label: 'Favoritos', icon: '' },
   { path: '/carrito', label: 'Carrito', icon: '' },
+  { path: '/contacto', label: 'Contacto', icon: '' },
   { path: '/login', label: 'Login', icon: '' },
 ];
 
@@ -32,7 +35,7 @@ export default function BottomNav() {
         <span className="text-[10px]" style={{ color: 'rgba(39, 65, 86, 0.4)' }}>Cultura asiática & Otaku</span>
       </div>
 
-      <div className="flex items-center justify-around h-20 overflow-x-auto">
+      <div className="flex items-center justify-start h-20 overflow-x-auto no-scrollbar px-6 gap-8">
         {NAV_ITEMS.map(({ path, label, icon }) => {
           const active = pathname === path || (path !== '/' && pathname.startsWith(path));
           const isCart = path === '/carrito';
@@ -40,7 +43,7 @@ export default function BottomNav() {
             <Link
               key={path}
               to={path}
-              className="flex flex-col items-center gap-1 flex-1 py-2 transition-all hover:scale-110 active:scale-95 relative min-w-fit"
+              className="flex flex-col items-center gap-1 shrink-0 py-2 transition-all hover:scale-110 active:scale-95 relative"
             >
               {isCart && cartCount > 0 && (
                 <span 

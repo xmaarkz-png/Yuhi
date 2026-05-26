@@ -57,7 +57,7 @@ export default function Categorias() {
   ];
 
   return (
-    <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
+    <div className="min-h-screen" style={{ background: "#FBFCFF" }}>
       <Header />
 
       {/* Category header with gradient */}

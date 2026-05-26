@@ -19,7 +19,7 @@ function ComparisonView({ product }) {
   const cheapestIdx = sorted.findIndex((s) => s.inStock);
 
   return (
-    <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
+    <div className="min-h-screen" style={{ background: "#FBFCFF" }}>
       <Header subtitle="Comparador de precios" />
 
       <div className="px-4 pt-4 lg:px-10 lg:pt-6">
@@ -124,8 +124,10 @@ function ComparisonView({ product }) {
               </div>
             );
           })}
-        </div>        </div>
-        </div>      </div>
+        </div>
+        </div>
+        </div>
+      </div>
     </div>
   );
 }

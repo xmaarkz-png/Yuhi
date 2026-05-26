@@ -38,7 +38,7 @@ export default function Inicio() {
   const featured = getFeatured();
 
   return (
-    <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
+    <div className="min-h-screen" style={{ background: "#FBFCFF" }}>
       <Header />
 
       <div className="px-4 pt-8 pb-6 mx-auto lg:px-10">

@@ -26,11 +26,11 @@ export default function Header({ subtitle }) {
         boxShadow: '0 4px 20px rgba(223, 13, 88, 0.25)',
       }}
     >
-      <div className="flex items-center px-4 py-5 lg:px-10 gap-6">
+      <div className="flex items-center justify-center lg:justify-start px-4 py-5 lg:px-10 gap-0 lg:gap-6">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group shrink-0">
           <img src={yuhuLogo} alt="Yuhi Logo" className="h-12 w-auto transition-transform group-hover:scale-105" />
-          <span className="hidden sm:block text-xs text-white/50 font-medium">Cultura asiática & Otaku</span>
+          <span className="hidden lg:block text-xs text-white/50 font-medium">Cultura asiática & Otaku</span>
         </Link>
 
         {/* Desktop nav - left aligned */}
@@ -65,7 +65,7 @@ export default function Header({ subtitle }) {
       </div>
 
       {subtitle && (
-        <div className="px-4 pb-3 lg:px-8">
+        <div className="px-4 pb-3 lg:px-8 text-center lg:text-left">
           <p className="text-white/90 text-sm font-bold">{subtitle}</p>
         </div>
       )}
