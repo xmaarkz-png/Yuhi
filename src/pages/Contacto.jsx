@@ -1,0 +1,82 @@
+import { useState } from "react";
+import Header from "../components/Header";
+import AuthButton from "../components/AuthButton";
+
+export default function Contacto() {
+  const [form, setForm] = useState({ nombre: "", email: "", mensaje: "" });
+  const [sent, setSent] = useState(false);
+  const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  return (
+    <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
+      <Header />
+
+      <div className="px-4 pt-5 lg:max-w-4xl lg:mx-auto lg:px-10 lg:pt-8">
+        <h2 className="text-base font-semibold mb-4 lg:text-xl lg:mb-8" style={{ color: "#274156" }}>Contacto</h2>
+
+        <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:items-start">
+        {/* Info */}
+        <div className="flex flex-col gap-3 mb-6 lg:mb-0">
+          {[
+            { icon: "📞", label: "Telefono", value: "+34 123 456 789" },
+            { icon: "📍", label: "Direccion", value: "Calle Yuhi, 12, Zaragoza" },
+            { icon: "🕐", label: "Horario", value: "Lun-Dom: 13:00 - 22:00" },
+          ].map((row) => (
+            <div key={row.label} className="flex items-center gap-3">
+              <span className="text-xl w-7 text-center">{row.icon}</span>
+              <div>
+                <p className="text-[11px]" style={{ color: "#1C6E8C" }}>{row.label}</p>
+                <p className="text-sm font-medium" style={{ color: "#274156" }}>{row.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div>
+        {sent ? (
+          <div className="flex flex-col items-center py-12 gap-3 text-center">
+            <span className="text-5xl">✅</span>
+            <p className="font-semibold" style={{ color: "#274156" }}>Mensaje enviado</p>
+            <button onClick={() => setSent(false)} className="text-sm underline" style={{ color: "#1C6E8C" }}>
+              Enviar otro
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={(e) => { e.preventDefault(); setSent(true); }} className="flex flex-col gap-3">
+            {[
+              { name: "nombre", placeholder: "Nombre", type: "text" },
+              { name: "email", placeholder: "Email", type: "email" },
+            ].map((f) => (
+              <input
+                key={f.name}
+                type={f.type}
+                name={f.name}
+                value={form[f.name]}
+                onChange={change}
+                placeholder={f.placeholder}
+                required
+                className="w-full px-4 py-3 rounded-2xl text-sm outline-none"
+                style={{ background: "#D0CCD0", color: "#274156" }}
+              />
+            ))}
+            <textarea
+              name="mensaje"
+              value={form.mensaje}
+              onChange={change}
+              placeholder="Mensaje"
+              rows={4}
+              required
+              className="w-full px-4 py-3 rounded-2xl text-sm outline-none resize-none"
+              style={{ background: "#D0CCD0", color: "#274156" }}
+            />
+            <AuthButton type="submit" variant="primary">
+              Enviar Mensaje ✈️
+            </AuthButton>
+          </form>
+        )}
+        </div>
+        </div>
+      </div>
+    </div>
+  );
+}
