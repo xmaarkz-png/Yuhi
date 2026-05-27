@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { getByCategory, getCheapestPrice, STORE_META, CATALOG } from "../data/catalog";
-import { searchGoogleShopping } from "../services/api";
+import { searchProducts } from "../services/api";
 
 const CATEGORIES = [
   {
@@ -60,8 +60,8 @@ export default function Categorias() {
       setLoading(true);
       setApiProducts([]); // Limpiamos resultados anteriores al empezar
       try {
-        // Primary search
-        const results = await searchGoogleShopping(cat.searchQuery);
+        // Primary search (adds results to cache)
+        const results = await searchProducts(cat.searchQuery, 20);
         console.log(`[SerpApi] Resultados para ${cat.label}:`, results);
 
         // Build deduped list of up to 9 API products using primary query first
@@ -88,7 +88,7 @@ export default function Categorias() {
             if (merged.length >= 9) break;
             if (!term || term === cat.searchQuery) continue;
             try {
-              const extra = await searchGoogleShopping(term);
+              const extra = await searchProducts(term, 20);
               console.log(`[SerpApi] Resultados adicionales para "${term}":`, extra?.length || 0);
               for (const e of extra) {
                 pushIfUnique(e);
