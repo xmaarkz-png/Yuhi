@@ -9,7 +9,7 @@ export default defineConfig({
       '/api/serpapi': {
         target: 'https://serpapi.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/serpapi/, ''),
+        rewrite: (path) => '/search' + path.replace(/^\/api\/serpapi/, ''),
       },
       '/api/elimapi': {
         target: 'https://api.elim.asia',

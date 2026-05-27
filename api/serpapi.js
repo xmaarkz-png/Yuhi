@@ -1,8 +1,8 @@
 /**
  * Vercel Serverless Function — SerpApi proxy
  *
- * Handles: /api/serpapi/*
- * Forwards requests to https://serpapi.com/* and injects the server-side API key.
+ * Handles all requests to /api/serpapi
+ * Forwards to https://serpapi.com/search and injects the server-side API key.
  *
  * Required env variable (set in Vercel dashboard):
  *   SERPAPI_KEY=<your serpapi key>
@@ -14,19 +14,12 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'SERPAPI_KEY environment variable is not set.' });
   }
 
-  // req.query.path is the catch-all array, e.g. ['search']
-  const pathSegments = req.query.path || [];
-  const subPath = Array.isArray(pathSegments) ? pathSegments.join('/') : pathSegments;
+  const targetUrl = new URL('https://serpapi.com/search');
 
-  // Build the target SerpApi URL
-  const targetUrl = new URL(`https://serpapi.com/${subPath}`);
-
-  // Forward all query params (except Vercel's internal 'path' param)
-  const { path: _ignored, ...queryParams } = req.query;
-  for (const [key, value] of Object.entries(queryParams)) {
+  // Forward all query params from the client and inject the API key
+  for (const [key, value] of Object.entries(req.query)) {
     targetUrl.searchParams.set(key, value);
   }
-  // Inject server-side key — never exposed to the browser
   targetUrl.searchParams.set('api_key', apiKey);
 
   try {

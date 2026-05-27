@@ -26,7 +26,7 @@ export async function searchGoogleShopping(keyword) {
       hl: 'es',
     });
     // We call the server-side proxy at /api/serpapi which injects the api_key
-    const res = await fetch(`${SERPAPI_BASE}/search?${params}`);
+    const res = await fetch(`${SERPAPI_BASE}?${params}`);
     if (!res.ok) throw new Error(`SerpApi proxy error: ${res.status}`);
     const data = await res.json();
     const items = data?.shopping_results || [];
