@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
-import { getFeatured, getCheapestPrice, STORE_META } from "../data/catalog";
+import { getFeatured, getCheapestPrice, STORE_META, CATALOG } from "../data/catalog";
+import { fetchPricesForProduct } from "../services/api";
 import merchImg from "../assets/merch.webp";
 import ropaImg from "../assets/ropajapo.jpg";
 
@@ -35,7 +37,79 @@ const CATEGORIES = [
 
 export default function Inicio() {
   const navigate = useNavigate();
-  const featured = getFeatured();
+  const [featured, setFeatured] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoading(true);
+      const base = getFeatured();
+      const promises = base.map(async (product) => {
+        try {
+          const prices = await fetchPricesForProduct(product.title);
+          if (prices && prices.length > 0) {
+            const cheapest = prices[0];
+            return {
+              ...product,
+              price: cheapest.price,
+              currency: cheapest.currency || '€',
+              url: cheapest.url,
+              inStock: typeof cheapest.inStock === 'boolean' ? cheapest.inStock : true,
+              source: STORE_META[cheapest.store]?.name || cheapest.store,
+              sourceIcon: STORE_META[cheapest.store]?.icon || '',
+              store: cheapest.store,
+              image: product.image || cheapest.image || '',
+            };
+          }
+        } catch (e) {
+          console.error('Error loading prices for', product.title, e);
+        }
+        return null;
+      });
+
+      const results = await Promise.all(promises);
+      let filtered = results.filter(Boolean).slice(0, 6);
+
+      // If we don't have 6 items, try to fill from CATALOG items
+      if (filtered.length < 6) {
+        const needed = 6 - filtered.length;
+        const usedIds = new Set(filtered.map((p) => p.id));
+        // iterate catalog items and fetch prices until we have enough
+        for (const item of CATALOG) {
+          if (filtered.length >= 6) break;
+          if (usedIds.has(item.id)) continue;
+          try {
+            const prices = await fetchPricesForProduct(item.title);
+            if (prices && prices.length > 0) {
+              const cheapest = prices[0];
+              const filled = {
+                ...item,
+                price: cheapest.price,
+                currency: cheapest.currency || '€',
+                url: cheapest.url,
+                inStock: typeof cheapest.inStock === 'boolean' ? cheapest.inStock : true,
+                source: STORE_META[cheapest.store]?.name || cheapest.store,
+                sourceIcon: STORE_META[cheapest.store]?.icon || '',
+                store: cheapest.store,
+                image: item.image || cheapest.image || '',
+              };
+              filtered.push(filled);
+              usedIds.add(item.id);
+            }
+          } catch (e) {
+            console.error('Error filling featured from catalog', item.title, e);
+          }
+        }
+      }
+
+      if (mounted) setFeatured(filtered.slice(0, 6));
+      setLoading(false);
+    };
+
+    load();
+    return () => { mounted = false; };
+  }, []);
 
   return (
     <div className="min-h-screen" style={{ background: "#FBFCFF" }}>
@@ -72,31 +146,21 @@ export default function Inicio() {
         </div>
 
         {/* Featured products */}
-        <div>
+        <div className="mt-12 lg:mt-16">
           <h2 className="text-xl font-bold mb-4 uppercase tracking-tight" style={{ color: "#274156" }}>
             Destacados
           </h2>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
-            {featured.map((product) => {
-              const cheapest = getCheapestPrice(product);
-              const featuredCard = cheapest
-                ? {
-                    ...product,
-                    price: cheapest.price,
-                    currency: cheapest.currency,
-                    url: cheapest.url,
-                    inStock: cheapest.inStock,
-                    source: STORE_META[cheapest.store]?.name || cheapest.store,
-                    sourceIcon: STORE_META[cheapest.store]?.icon || '',
-                    store: cheapest.store,
-                  }
-                : null;
-
-              return featuredCard ? (
-                <ProductCard key={`${product.id}-${cheapest.store}`} product={featuredCard} highlight={true} />
-              ) : null;
-            })}
+            {loading ? (
+              [1,2,3,4,5,6].map((n) => (
+                <div key={n} className="bg-slate-100 h-64 rounded-3xl border border-slate-200 animate-pulse" />
+              ))
+            ) : (
+              featured.map((product) => (
+                <ProductCard key={`${product.id}-${product.store || 'srv'}`} product={product} highlight={true} />
+              ))
+            )}
           </div>
         </div>
       </div>

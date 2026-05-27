@@ -4,13 +4,43 @@ import Header from "../components/Header";
 import AuthButton from "../components/AuthButton";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
-import { getById, searchCatalog, getCheapestPrice, STORE_META } from "../data/catalog";
+import { getById, getCheapestPrice, STORE_META } from "../data/catalog";
+import { searchProducts, fetchPricesForProduct } from '../services/api';
+import { useEffect } from 'react';
 
 // ── Comparison view: one product vs multiple stores ────────────────────────
 function ComparisonView({ product }) {
   const navigate = useNavigate();
+  const [stores, setStores] = useState(product?.stores || []);
 
-  const sorted = [...product.stores].sort((a, b) => {
+  useEffect(() => {
+    let mounted = true;
+    const loadStores = async () => {
+      if (product?.stores && product.stores.length) {
+        setStores(product.stores);
+        return;
+      }
+      try {
+        const live = await fetchPricesForProduct(product.title || product.name || product.id);
+        if (!mounted) return;
+        // Map live results to store entries
+        const mapped = (live || []).map(r => ({
+          store: r.store || r.source || r.source?.toLowerCase?.() || 'unknown',
+          price: r.price || null,
+          currency: r.currency || '€',
+          url: r.url || r.link || '#',
+          inStock: r.inStock !== false,
+        }));
+        setStores(mapped);
+      } catch (err) {
+        console.warn('Error cargando precios en vivo:', err);
+      }
+    };
+    loadStores();
+    return () => { mounted = false; };
+  }, [product]);
+
+  const sorted = [...(stores || [])].sort((a, b) => {
     if (!a.inStock) return 1;
     if (!b.inStock) return -1;
     return a.price - b.price;
@@ -137,7 +167,30 @@ function CatalogBrowse() {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
 
-  const results = searchCatalog(query);
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const q = query && query.length >= 3 ? query : 'anime oferta';
+        const r = await searchProducts(q, 12);
+        if (!mounted) return;
+        // Only show products that come from the API with essential fields
+        const filtered = (r || []).filter(p => p && p.title && (typeof p.price === 'number') );
+        setResults(filtered);
+      } catch (err) {
+        console.warn('Ofertas search error', err);
+        if (mounted) setResults([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    const t = setTimeout(load, 200);
+    return () => { mounted = false; clearTimeout(t); };
+  }, [query]);
 
   return (
     <div className="pb-20 min-h-screen lg:pb-12" style={{ background: "#FBFCFF" }}>
@@ -165,7 +218,12 @@ function CatalogBrowse() {
           )}
         </div>
 
-        {results.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center py-16 gap-2 text-center">
+            <div className="w-16 h-1 bg-slate-200 mb-4"></div>
+            <p className="font-semibold" style={{ color: "#274156" }}>Cargando ofertas...</p>
+          </div>
+        ) : results.length === 0 ? (
           <div className="flex flex-col items-center py-16 gap-2 text-center">
             <div className="w-16 h-1 bg-slate-200 mb-4"></div>
             <p className="font-semibold" style={{ color: "#274156" }}>Sin resultados</p>
@@ -173,23 +231,9 @@ function CatalogBrowse() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5 pb-4">
-            {results.map((product) => {
-              const cheapest = getCheapestPrice(product);
-              const cardItem = cheapest
-                ? {
-                    ...product,
-                    price: cheapest.price,
-                    currency: cheapest.currency,
-                    url: cheapest.url,
-                    inStock: cheapest.inStock,
-                    source: STORE_META[cheapest.store]?.name || cheapest.store,
-                    sourceIcon: STORE_META[cheapest.store]?.icon || '',
-                    store: cheapest.store,
-                  }
-                : product;
-
-              return <ProductCard key={`${product.id}-${cardItem.store}`} product={cardItem} highlight={false} />;
-            })}
+            {results.map((product) => (
+              <ProductCard key={product.id} product={product} highlight={false} />
+            ))}
           </div>
         )}
       </div>

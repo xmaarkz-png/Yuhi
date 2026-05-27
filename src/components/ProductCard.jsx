@@ -9,7 +9,7 @@ export default function ProductCard({ product, highlight = false }) {
   const navigate = useNavigate();
 
   const discount =
-    price && originalPrice && originalPrice > price
+    price != null && originalPrice != null && originalPrice > price
       ? Math.round(((originalPrice - price) / originalPrice) * 100)
       : null;
 
@@ -43,10 +43,8 @@ export default function ProductCard({ product, highlight = false }) {
     >
       <div className="relative w-full h-48 overflow-hidden" style={{ background: "#F5F7FA" }}>
         {image ? (
-          <img src={image} alt={title} className="w-full h-full object-cover" loading="lazy" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-300 text-xs uppercase font-bold">Sin imagen</div>
-        )}
+          <img src={image} alt={title || ''} className="w-full h-full object-cover" loading="lazy" />
+        ) : null}
         <button 
           onClick={handleFavorite}
           className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm active:scale-90"
@@ -90,20 +88,18 @@ export default function ProductCard({ product, highlight = false }) {
 
         <div className="flex items-center justify-between gap-3">
           <div>
-            {price !== null ? (
+            {price != null ? (
               <div className="flex items-center gap-2">
                 <span className="font-bold text-base" style={{ color: "#1C6E8C" }}>
-                  {currency}{price.toFixed(2)}
+                  {currency}{Number(price).toFixed(2)}
                 </span>
-                {originalPrice && originalPrice > price && (
+                {originalPrice != null && originalPrice > price && (
                   <span className="text-xs line-through" style={{ color: "#A0AEC0" }}>
-                    {currency}{originalPrice.toFixed(2)}
+                    {currency}{Number(originalPrice).toFixed(2)}
                   </span>
                 )}
               </div>
-            ) : (
-              <span className="text-sm" style={{ color: "#A0AEC0" }}>Precio no disponible</span>
-            )}
+            ) : null}
           </div>
           {discount && <span className="text-[10px] px-2 py-1 rounded-full bg-[#E6F8F1] text-[#0F766E]">Mejor oferta</span>}
         </div>

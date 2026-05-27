@@ -2,19 +2,27 @@ import { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
-import { searchCatalog, getCheapestPrice, STORE_META } from '../data/catalog';
+import { getCheapestPrice, STORE_META } from '../data/catalog';
+import { getCachedProductsByQuery } from '../services/api';
+import { useEffect } from 'react';
 
 export default function CompararProductos() {
   const [query1, setQuery1] = useState('');
   const [query2, setQuery2] = useState('');
   const [selectedP1, setSelectedP1] = useState(null);
   const [selectedP2, setSelectedP2] = useState(null);
-
-  const results1 = query1.length > 2 ? searchCatalog(query1) : [];
-  const results2 = query2.length > 2 ? searchCatalog(query2) : [];
+  const [results1, setResults1] = useState([]);
+  const [results2, setResults2] = useState([]);
+  const [loading1, setLoading1] = useState(false);
+  const [loading2, setLoading2] = useState(false);
 
   const formatForCard = (p) => {
     if (!p) return null;
+    // If it's an API-normalized product (has price and url), use it directly
+    if (typeof p.price === 'number' || p.price !== null) {
+      return p;
+    }
+    // Fallback for catalog items
     const cheapest = getCheapestPrice(p);
     return cheapest ? {
       ...p,
@@ -27,6 +35,38 @@ export default function CompararProductos() {
       store: cheapest.store,
     } : null;
   };
+
+  // Debounced cached search for query1 (no API calls)
+  useEffect(() => {
+    if (!query1 || query1.length < 3) {
+      setResults1([]);
+      return;
+    }
+    let cancelled = false;
+    setLoading1(true);
+    const t = setTimeout(() => {
+      const r = getCachedProductsByQuery(query1, 8);
+      if (!cancelled) setResults1(r || []);
+      setLoading1(false);
+    }, 200);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [query1]);
+
+  // Debounced cached search for query2 (no API calls)
+  useEffect(() => {
+    if (!query2 || query2.length < 3) {
+      setResults2([]);
+      return;
+    }
+    let cancelled = false;
+    setLoading2(true);
+    const t = setTimeout(() => {
+      const r = getCachedProductsByQuery(query2, 8);
+      if (!cancelled) setResults2(r || []);
+      setLoading2(false);
+    }, 200);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [query2]);
 
   const p1Card = formatForCard(selectedP1);
   const p2Card = formatForCard(selectedP2);
@@ -57,20 +97,24 @@ export default function CompararProductos() {
                 placeholder="Escribe para buscar..."
                 className="w-full px-5 py-3 rounded-2xl bg-white border border-[#F0E6EA] outline-none focus:border-[#1C6E8C] text-sm shadow-sm"
               />
-              {results1.length > 0 && !selectedP1 && (
+              {(results1.length > 0 || loading1) && !selectedP1 && (
                 <div className="absolute z-20 w-full mt-2 bg-white rounded-2xl shadow-xl border border-[#F0E6EA] max-h-60 overflow-y-auto no-scrollbar">
-                  {results1.map(p => (
+                  {loading1 ? (
+                    <div className="p-4 text-sm text-slate-500">Buscando...</div>
+                  ) : (
+                    results1.map(p => (
                     <button
                       key={p.id}
                       onClick={() => { setSelectedP1(p); setQuery1(p.title); }}
                       className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm border-b border-[#F0E6EA] last:border-0 transition-colors"
                     >
                       <p className="font-bold text-[#274156]">{p.title}</p>
-                      <p className="text-[10px] text-[#1C6E8C] font-semibold mt-1">
-                        Desde {getCheapestPrice(p)?.currency}{getCheapestPrice(p)?.price.toFixed(2)}
-                      </p>
+                        <p className="text-[10px] text-[#1C6E8C] font-semibold mt-1">
+                          Desde {p.currency || '€'}{typeof p.price === 'number' ? p.price.toFixed(2) : p.price}
+                        </p>
                     </button>
-                  ))}
+                    ))
+                  )}
                 </div>
               )}
             </div>
@@ -97,20 +141,24 @@ export default function CompararProductos() {
                 placeholder="Escribe para buscar..."
                 className="w-full px-5 py-3 rounded-2xl bg-white border border-[#F0E6EA] outline-none focus:border-[#1C6E8C] text-sm shadow-sm"
               />
-              {results2.length > 0 && !selectedP2 && (
+              {(results2.length > 0 || loading2) && !selectedP2 && (
                 <div className="absolute z-20 w-full mt-2 bg-white rounded-2xl shadow-xl border border-[#F0E6EA] max-h-60 overflow-y-auto no-scrollbar">
-                  {results2.map(p => (
+                  {loading2 ? (
+                    <div className="p-4 text-sm text-slate-500">Buscando...</div>
+                  ) : (
+                    results2.map(p => (
                     <button
                       key={p.id}
                       onClick={() => { setSelectedP2(p); setQuery2(p.title); }}
                       className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm border-b border-[#F0E6EA] last:border-0 transition-colors"
                     >
                       <p className="font-bold text-[#274156]">{p.title}</p>
-                      <p className="text-[10px] text-[#1C6E8C] font-semibold mt-1">
-                        Desde {getCheapestPrice(p)?.currency}{getCheapestPrice(p)?.price.toFixed(2)}
-                      </p>
+                        <p className="text-[10px] text-[#1C6E8C] font-semibold mt-1">
+                          Desde {p.currency || '€'}{typeof p.price === 'number' ? p.price.toFixed(2) : p.price}
+                        </p>
                     </button>
-                  ))}
+                    ))
+                  )}
                 </div>
               )}
             </div>

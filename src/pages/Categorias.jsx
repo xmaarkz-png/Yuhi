@@ -3,14 +3,42 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
-import { getByCategory, getCheapestPrice, STORE_META } from "../data/catalog";
-import { searchTaobaoProducts } from "../services/elimApi";
+import { getByCategory, getCheapestPrice, STORE_META, CATALOG } from "../data/catalog";
+import { searchGoogleShopping } from "../services/api";
 
 const CATEGORIES = [
-  { id: "merchandising", label: "Merchandising", emoji: "", color: "#9f1239", searchQuery: "anime figure" },
-  { id: "alimentacion",  label: "Alimentación",  emoji: "", color: "#b45309", searchQuery: "japanese snack" },
-  { id: "ropa",          label: "Ropa",          emoji: "", color: "#0369a1", searchQuery: "anime hoodie" },
-  { id: "literatura",    label: "Literatura",    emoji: "", color: "#6f46c1", searchQuery: "manga book" },
+  {
+    id: "merchandising",
+    label: "Merchandising",
+    emoji: "",
+    color: "#9f1239",
+    searchQuery: "anime figure",
+    synonyms: ["anime figure", "anime figurine", "anime collectible", "figure pvc", "anime statue"],
+  },
+  {
+    id: "alimentacion",
+    label: "Alimentación",
+    emoji: "",
+    color: "#b45309",
+    searchQuery: "japanese snack",
+    synonyms: ["japanese snack", "japanese candy", "japanese chips", "japanese snacks pack", "japanese treats"],
+  },
+  {
+    id: "ropa",
+    label: "Ropa",
+    emoji: "",
+    color: "#0369a1",
+    searchQuery: "anime hoodie",
+    synonyms: ["anime hoodie", "anime sweatshirt", "manga hoodie", "anime jacket", "anime pullover"],
+  },
+  {
+    id: "literatura",
+    label: "Literatura",
+    emoji: "",
+    color: "#6f46c1",
+    searchQuery: "manga book",
+    synonyms: ["manga book", "manga volume", "manga tomo", "manga volume set", "manga paperback"],
+  },
 ];
 
 export default function Categorias() {
@@ -22,6 +50,7 @@ export default function Categorias() {
 
   const catalogProducts = getByCategory(activecat);
   const activeCat = CATEGORIES.find((c) => c.id === activecat);
+  const [mergedProducts, setMergedProducts] = useState([]);
 
   useEffect(() => {
     const cat = CATEGORIES.find((c) => c.id === activecat);
@@ -31,12 +60,53 @@ export default function Categorias() {
       setLoading(true);
       setApiProducts([]); // Limpiamos resultados anteriores al empezar
       try {
-        const results = await searchTaobaoProducts(cat.searchQuery);
-        console.log(`[API Elim] Resultados para ${cat.label}:`, results);
-        setApiProducts(results.slice(0, 6));
+        // Primary search
+        const results = await searchGoogleShopping(cat.searchQuery);
+        console.log(`[SerpApi] Resultados para ${cat.label}:`, results);
+
+        // Build deduped list of up to 9 API products using primary query first
+        const merged = [];
+        const seenTitles = new Set();
+        const pushIfUnique = (item) => {
+          if (merged.length >= 9) return;
+          const t = (item.title || '').toLowerCase();
+          const id = item.id || t;
+          if (!seenTitles.has(t) && !seenTitles.has(id)) {
+            merged.push(item);
+            seenTitles.add(t);
+            seenTitles.add(id);
+          }
+        };
+
+        for (const a of results) {
+          pushIfUnique(a);
+        }
+
+        // If we still have less than 9, run additional searches using synonyms
+        if (merged.length < 9 && Array.isArray(cat.synonyms)) {
+          for (const term of cat.synonyms) {
+            if (merged.length >= 9) break;
+            if (!term || term === cat.searchQuery) continue;
+            try {
+              const extra = await searchGoogleShopping(term);
+              console.log(`[SerpApi] Resultados adicionales para "${term}":`, extra?.length || 0);
+              for (const e of extra) {
+                pushIfUnique(e);
+                if (merged.length >= 9) break;
+              }
+            } catch (err) {
+              console.warn('Error buscando sinónimo', term, err);
+            }
+          }
+        }
+
+        setApiProducts(merged.slice(0, 9));
+        setMergedProducts(merged);
       } catch (error) {
         console.error("Error fetching products:", error);
         setApiProducts([]);
+        setCatalogBacked([]);
+        setMergedProducts([]);
       } finally {
         setLoading(false);
       }
@@ -45,16 +115,8 @@ export default function Categorias() {
     fetchProducts();
   }, [activecat]);
 
-  // Merge: catalog products first, then API results
-  const allProducts = [
-    ...catalogProducts,
-    ...apiProducts.filter(
-      (api) =>
-        !catalogProducts.some(
-          (cat) => cat.title.toLowerCase() === api.title.toLowerCase()
-        )
-    ),
-  ];
+  // We intentionally do not merge catalog items here to prefer live API data
+  const allProducts = apiProducts;
 
   return (
     <div className="min-h-screen" style={{ background: "#FBFCFF" }}>
@@ -99,64 +161,29 @@ export default function Categorias() {
       </div>
 
       <div className="px-4 pt-6 pb-4 lg:px-10 flex flex-col gap-6">
-        {/* Catalog products section */}
-        {catalogProducts.length > 0 && (
+          {/* Catalog-backed + API products (up to 9) */}
           <div>
             <h2 className="text-lg font-bold mb-4" style={{ color: "#274156" }}>
-              RECOMENDADOS
+              Productos
             </h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
-              {catalogProducts.map((product) => {
-                const cheapest = getCheapestPrice(product);
-                const featuredCard = cheapest
-                  ? {
-                      ...product,
-                      price: cheapest.price,
-                      currency: cheapest.currency,
-                      url: cheapest.url,
-                      inStock: cheapest.inStock,
-                      source: STORE_META[cheapest.store]?.name || cheapest.store,
-                      sourceIcon: STORE_META[cheapest.store]?.icon || '',
-                      store: cheapest.store,
-                    }
-                  : null;
-
-                return featuredCard ? (
-                  <ProductCard key={`${product.id}-${cheapest.store}`} product={featuredCard} highlight={true} />
-                ) : null;
-              })}
+              {loading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="bg-slate-100 h-64 rounded-3xl border border-slate-200 animate-pulse" />
+                ))
+              ) : mergedProducts.length > 0 ? (
+                mergedProducts.map((product) => (
+                  <ProductCard key={`${product.id}-${product.store || 'srv'}`} product={product} highlight={false} />
+                ))
+              ) : (
+                <p className="text-xs text-slate-400 italic">No se encontraron productos con información desde la API.</p>
+              )}
             </div>
           </div>
-        )}
 
-        {/* API products section */}
-        <div className="mt-4">
-          <h2 className="text-lg font-bold mb-4 flex items-center gap-2 uppercase tracking-tight" style={{ color: "#274156" }}>
-            {loading ? "Buscando en Taobao..." : "Más opciones (Importación)"}
-          </h2>
-          
-          {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 animate-pulse">
-              {[1, 2, 3].map((n) => (
-                <div key={n} className="bg-slate-100 h-64 rounded-3xl border border-slate-200" />
-              ))}
-            </div>
-          ) : apiProducts.length > 0 ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
-              {apiProducts.map((product) => (
-                <ProductCard
-                  key={`${product.source}-${product.id}`}
-                  product={product}
-                  highlight={false}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-slate-400 italic">No se encontraron productos adicionales en esta categoría.</p>
-          )}
-        </div>
+        {/* Import section removed — mergedProducts displays catalog + API results */}
 
-        {!loading && catalogProducts.length === 0 && apiProducts.length === 0 && (
+        {!loading && mergedProducts.length === 0 && (
           <div className="flex flex-col items-center py-24 gap-3 text-center">
             <div className="w-12 h-12 border-4 border-slate-200 border-t-[#1C6E8C] rounded-full animate-spin mb-4"></div>
             <p className="font-bold text-lg" style={{ color: "#274156" }}>Cargando productos...</p>

@@ -39,12 +39,31 @@ export default function Footer() {
         </div>
 
         {/* Social & Payments */}
-        <div className="hidden lg:flex flex-col items-center lg:items-start">
+        <div className="flex flex-col items-center md:items-start">
           <h4 className="font-bold mb-2 lg:mb-4 text-[11px] lg:text-sm uppercase tracking-wider text-white/60">Conectar</h4>
-          <div className="flex flex-col gap-1 text-xs lg:text-sm text-white/80">
-            <p>Instagram:Yuhi_Store</p>
-            <p>Facebook:Yuhi_Store</p>
-            <p>X:Yuhi_Store</p>
+          <div className="flex flex-col gap-2 text-sm text-white/80">
+            <a href="https://www.instagram.com/Yuhi_Store" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="20" height="20" rx="5" stroke="white" strokeWidth="1.2" fill="none" />
+                <path d="M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                <circle cx="17.5" cy="6.5" r="0.6" fill="white" />
+              </svg>
+              <span>Instagram: Yuhi_Store</span>
+            </a>
+
+            <a href="https://www.facebook.com/Yuhi_Store" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+              <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2.5v-2.9h2.5V9.5c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6v1.9h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z" fill="white" />
+              </svg>
+              <span>Facebook: Yuhi_Store</span>
+            </a>
+
+            <a href="https://twitter.com/Yuhi_Store" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+              <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 5.92c-.63.28-1.31.47-2.02.56.73-.44 1.29-1.14 1.55-1.98-.68.4-1.43.7-2.23.86C18.32 4.6 17.36 4 16.28 4c-1.58 0-2.86 1.28-2.86 2.86 0 .22.02.44.07.65C10.48 7.4 7.24 5.57 5.1 3.01c-.25.43-.39.93-.39 1.46 0 1.01.51 1.9 1.29 2.42-.6-.02-1.17-.18-1.67-.46v.05c0 1.39.99 2.55 2.31 2.82-.24.07-.5.11-.77.11-.19 0-.38-.02-.56-.05.38 1.18 1.48 2.04 2.78 2.06C9.1 14.8 7.7 15.36 6.22 15.36c-.12 0-.24 0-.36-.01C7.59 16.19 9.27 16.7 11.06 16.7c5.28 0 8.17-4.37 8.17-8.17v-.37c.56-.4 1.04-.9 1.42-1.47-.51.23-1.06.38-1.63.45z" fill="white" />
+              </svg>
+              <span>X: Yuhi_Store</span>
+            </a>
           </div>
         </div>
       </div>
