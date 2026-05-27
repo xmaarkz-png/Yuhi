@@ -2,50 +2,23 @@
  * API Service Layer — Price Comparison
  *
  * Supported sources:
- *  1. TMAPI (Amazon via tmapi.top)  — item_detail_by_url
- *  2. SerpApi (Google Shopping)     — returns multi-store prices in one call
+ *  1. SerpApi (Google Shopping) — returns multi-store prices
+ *  2. Elimapi (Taobao/1688) — optional provider (deprecated)
  */
 
-const TMAPI_BASE = '/api/tmapi';
 const SERPAPI_BASE = '/api/serpapi';
 const ELIMAPI_BASE = '/api/elimapi';
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 // Store your keys in a .env file:
-//   VITE_TMAPI_KEY=your_key
 //   VITE_SERPAPI_KEY=your_key
 //   VITE_ELIMAPI_KEY=c873a0b1df40c3818f917ed3001a3cf007102f5f
 //   VITE_AMAZON_AFFILIATE_TAG=your_tag
-const TMAPI_KEY = import.meta.env.VITE_TMAPI_KEY || '';
 const SERPAPI_KEY = import.meta.env.VITE_SERPAPI_KEY || '';
 const ELIMAPI_KEY = import.meta.env.VITE_ELIMAPI_KEY || '';
 const AMAZON_TAG = import.meta.env.VITE_AMAZON_AFFILIATE_TAG || 'yuhi00-21';
 
-// ─── TMAPI — Amazon product detail by URL ────────────────────────────────────
-export async function fetchAmazonByUrl(productUrl) {
-  const params = new URLSearchParams({
-    url: productUrl,
-    ...(TMAPI_KEY && { api_key: TMAPI_KEY }),
-  });
-  const res = await fetch(`${TMAPI_BASE}/amazon/item_detail_by_url?${params}`);
-  if (!res.ok) throw new Error(`TMAPI error: ${res.status}`);
-  const data = await res.json();
-  return normalizeTmapi(data, productUrl);
-}
-
-// ─── TMAPI — Amazon search by keyword ────────────────────────────────────────
-export async function searchAmazon(keyword) {
-  const params = new URLSearchParams({
-    keyword,
-    country: 'ES',
-    ...(TMAPI_KEY && { api_key: TMAPI_KEY }),
-  });
-  const res = await fetch(`${TMAPI_BASE}/amazon/search?${params}`);
-  if (!res.ok) throw new Error(`TMAPI search error: ${res.status}`);
-  const data = await res.json();
-  const items = data?.data?.products || data?.products || [];
-  return items.slice(0, 6).map((p) => normalizeTmapi(p, p.url || p.link));
-}
+// TMAPI removed — use SerpApi for Amazon/Marketplace searches
 
 // ─── SerpApi — Google Shopping (multi-store prices) ──────────────────────────
 export async function searchGoogleShopping(keyword) {
@@ -170,23 +143,7 @@ export async function searchElimapi(keyword) {
 }
 
 // ─── Normalizers ─────────────────────────────────────────────────────────────
-function normalizeTmapi(raw, url) {
-  return {
-    id: raw.asin || raw.id || url,
-    source: 'Amazon',
-    sourceIcon: '🛒',
-    title: raw.title || raw.name || 'Producto Amazon',
-    price: parsePrice(raw.price || raw.sale_price || raw.current_price),
-    originalPrice: parsePrice(raw.original_price || raw.list_price),
-    image: raw.main_image || raw.image || raw.thumbnail || '',
-    rating: raw.rating || null,
-    reviews: raw.reviews_count || raw.review_count || 0,
-    url: buildAffiliateUrl(url || raw.url || raw.link, 'amazon'),
-    currency: raw.currency || '€',
-    inStock: raw.availability !== 'Out of Stock',
-    badge: raw.badge || null,
-  };
-}
+// (TMAPI support was removed)
 
 function normalizeSerpapi(raw) {
   return {
@@ -261,7 +218,6 @@ function buildAffiliateUrl(url, store) {
  */
 export async function compareAllSources(keyword) {
   const results = await Promise.allSettled([
-    searchAmazon(keyword),
     searchGoogleShopping(keyword),
     searchElimapi(keyword),
   ]);
