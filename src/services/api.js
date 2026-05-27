@@ -7,16 +7,11 @@
  */
 
 const SERPAPI_BASE = '/api/serpapi';
-const ELIMAPI_BASE = '/api/elimapi';
 
 // ─── Config ──────────────────────────────────────────────────────────────────
-// Store your keys in a .env file:
-//   VITE_SERPAPI_KEY=your_key
-//   VITE_ELIMAPI_KEY=c873a0b1df40c3818f917ed3001a3cf007102f5f
-//   VITE_AMAZON_AFFILIATE_TAG=your_tag
-const SERPAPI_KEY = import.meta.env.VITE_SERPAPI_KEY || '';
-const ELIMAPI_KEY = import.meta.env.VITE_ELIMAPI_KEY || '';
-const AMAZON_TAG = import.meta.env.VITE_AMAZON_AFFILIATE_TAG || 'yuhi00-21';
+// Runtime keys removed for deploy: use empty defaults to avoid external key prompts
+const SERPAPI_KEY = '';
+const AMAZON_TAG = 'yuhi00-21';
 
 // TMAPI removed — use SerpApi for Amazon/Marketplace searches
 
