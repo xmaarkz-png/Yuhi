@@ -17,12 +17,13 @@
  */
 
 export const STORE_META = {
-  amazon:     { name: 'Amazon',     icon: '🛒' },
-  aliexpress: { name: 'AliExpress', icon: '🛍️' },
-  cdjapan:    { name: 'CDJapan',    icon: '🇯🇵' },
-  ebay:       { name: 'eBay',       icon: '📦' },
-  rakuten:    { name: 'Rakuten',    icon: '🏪' },
-  jlist:      { name: 'J-List',     icon: '🎌' },
+  amazon:     { name: 'Amazon',     icon: '' },
+  aliexpress: { name: 'AliExpress', icon: '' },
+  cdjapan:    { name: 'CDJapan',    icon: '' },
+  ebay:       { name: 'eBay',       icon: '' },
+  rakuten:    { name: 'Rakuten',    icon: '' },
+  jlist:      { name: 'J-List',     icon: '' },
+  elimapi:    { name: 'Taobao',     icon: '' },
 };
 
 export const CATALOG = [
@@ -35,6 +36,7 @@ export const CATALOG = [
     image: '', // reemplaza con URL de imagen
     badge: 'Popular',
     featured: true,
+      image: '',
     stores: [
       { store: 'amazon',     price: 29.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 18.50, currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -50,6 +52,7 @@ export const CATALOG = [
     image: '',
     badge: null,
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 24.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 14.90, currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -64,6 +67,7 @@ export const CATALOG = [
     image: '',
     badge: 'Oferta',
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 14.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 9.80,  currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -78,6 +82,7 @@ export const CATALOG = [
     image: '',
     badge: null,
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 12.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 6.50,  currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -94,6 +99,7 @@ export const CATALOG = [
     image: '',
     badge: 'Viral',
     featured: true,
+      image: '',
     stores: [
       { store: 'amazon',     price: 9.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 7.20,  currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -108,6 +114,7 @@ export const CATALOG = [
     image: '',
     badge: null,
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 14.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 10.50, currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -122,6 +129,7 @@ export const CATALOG = [
     image: '',
     badge: 'Exclusivo',
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 11.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 8.90,  currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -136,6 +144,7 @@ export const CATALOG = [
     image: '',
     badge: null,
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 16.50, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 12.00, currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -152,6 +161,7 @@ export const CATALOG = [
     image: '',
     badge: null,
     featured: true,
+      image: '',
     stores: [
       { store: 'amazon',     price: 19.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 11.50, currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -166,6 +176,7 @@ export const CATALOG = [
     image: '',
     badge: 'Popular',
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 34.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 22.00, currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -180,6 +191,7 @@ export const CATALOG = [
     image: '',
     badge: null,
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 21.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 13.50, currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -193,6 +205,7 @@ export const CATALOG = [
     image: '',
     badge: 'Auténtico',
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 45.00, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'aliexpress', price: 28.00, currency: '€', url: '#TODO-aliexpress', inStock: true  },
@@ -209,6 +222,7 @@ export const CATALOG = [
     image: '',
     badge: null,
     featured: true,
+      image: '',
     stores: [
       { store: 'amazon',     price: 8.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'cdjapan',    price: 6.50,  currency: '€', url: '#TODO-cdjapan', inStock: true  },
@@ -223,6 +237,7 @@ export const CATALOG = [
     image: '',
     badge: 'Bestseller',
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 9.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'cdjapan',    price: 7.20,  currency: '€', url: '#TODO-cdjapan', inStock: true  },
@@ -237,6 +252,7 @@ export const CATALOG = [
     image: '',
     badge: null,
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 8.99,  currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'cdjapan',    price: 6.80,  currency: '€', url: '#TODO-cdjapan', inStock: true  },
@@ -251,6 +267,7 @@ export const CATALOG = [
     image: '',
     badge: 'Colección',
     featured: false,
+      image: '',
     stores: [
       { store: 'amazon',     price: 99.99, currency: '€', url: '#TODO-amazon', inStock: true  },
       { store: 'cdjapan',    price: 82.00, currency: '€', url: '#TODO-cdjapan', inStock: true  },

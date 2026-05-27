@@ -16,6 +16,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/serpapi/, ''),
       },
+      '/api/elimapi': {
+        target: 'https://api.elim.asia',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/elimapi/, ''),
+      },
     },
   },
 })

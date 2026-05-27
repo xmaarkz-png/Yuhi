@@ -12,8 +12,8 @@ export default function PriceComparisonRow({ results }) {
 
   return (
     <div className="rounded-2xl p-3 mb-4" style={{background:'rgba(28,110,140,0.07)',border:'1px solid rgba(28,110,140,0.2)'}}>
-      <p className="text-xs font-semibold mb-2 uppercase tracking-wide" style={{color:'#1C6E8C'}}>
-        💰 Comparativa de precios
+      <p className="text-[10px] font-bold mb-2 uppercase tracking-widest" style={{color:'#1C6E8C'}}>
+        Comparativa de precios
       </p>
       <div className="flex flex-col gap-2">
         {withPrice.map((r, i) => (

@@ -8,14 +8,17 @@
 
 const TMAPI_BASE = '/api/tmapi';
 const SERPAPI_BASE = '/api/serpapi';
+const ELIMAPI_BASE = '/api/elimapi';
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 // Store your keys in a .env file:
 //   VITE_TMAPI_KEY=your_key
 //   VITE_SERPAPI_KEY=your_key
+//   VITE_ELIMAPI_KEY=c873a0b1df40c3818f917ed3001a3cf007102f5f
 //   VITE_AMAZON_AFFILIATE_TAG=your_tag
 const TMAPI_KEY = import.meta.env.VITE_TMAPI_KEY || '';
 const SERPAPI_KEY = import.meta.env.VITE_SERPAPI_KEY || '';
+const ELIMAPI_KEY = import.meta.env.VITE_ELIMAPI_KEY || '';
 const AMAZON_TAG = import.meta.env.VITE_AMAZON_AFFILIATE_TAG || 'yuhi00-21';
 
 // ─── TMAPI — Amazon product detail by URL ────────────────────────────────────
@@ -61,7 +64,109 @@ export async function searchGoogleShopping(keyword) {
   if (!res.ok) throw new Error(`SerpApi error: ${res.status}`);
   const data = await res.json();
   const items = data?.shopping_results || [];
-  return items.slice(0, 6).map(normalizeSerpapi);
+  return items.slice(0, 20).map(normalizeSerpapi);
+}
+
+/**
+ * Generic product search wrapper used by UI components.
+ * Returns normalized products from SerpApi (or empty array on error).
+ */
+export async function searchProducts(query, limit = 10) {
+  if (!query) return [];
+  try {
+    const results = await searchGoogleShopping(query);
+    const slice = results.slice(0, limit);
+    addProductsToCache(slice);
+    return slice;
+  } catch (err) {
+    console.warn('searchProducts error', err);
+    return [];
+  }
+}
+
+// Simple in-memory cache of products fetched from the API during this session.
+// Keyed by `id` when available, otherwise by normalized title.
+const productCache = new Map();
+const LOCAL_STORAGE_KEY = 'yuhi_product_cache_v1';
+const MAX_CACHE_ENTRIES = 500;
+
+function persistCacheToLocalStorage() {
+  try {
+    const arr = Array.from(productCache.values());
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(arr));
+  } catch (e) {
+    // ignore storage errors (private mode, quota)
+    console.warn('Could not persist product cache', e);
+  }
+}
+
+function loadCacheFromLocalStorage() {
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (!raw) return;
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return;
+    for (const p of arr) {
+      const key = cacheKeyForProduct(p);
+      if (!key) continue;
+      productCache.set(key, p);
+    }
+  } catch (e) {
+    console.warn('Could not load product cache', e);
+  }
+}
+
+// Load persisted cache immediately
+if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+  loadCacheFromLocalStorage();
+}
+
+function cacheKeyForProduct(p) {
+  if (!p) return null;
+  return p.id || (p.title && p.title.toLowerCase().trim()) || null;
+}
+
+export function addProductsToCache(products) {
+  if (!Array.isArray(products)) return;
+  for (const p of products) {
+    const key = cacheKeyForProduct(p);
+    if (!key) continue;
+    // store a shallow copy to avoid mutations
+    productCache.set(key, { ...p });
+    // Evict oldest entries if cache grows too large
+    if (productCache.size > MAX_CACHE_ENTRIES) {
+      const it = productCache.keys();
+      const oldestKey = it.next().value;
+      if (oldestKey) productCache.delete(oldestKey);
+    }
+  }
+  // Persist after batch add
+  try { persistCacheToLocalStorage(); } catch {}
+}
+
+export function getCachedProductsByQuery(query, limit = 10) {
+  if (!query) return [];
+  const q = query.toLowerCase().trim();
+  const all = Array.from(productCache.values());
+  const filtered = all.filter((p) => p && p.title && p.title.toLowerCase().includes(q));
+  return filtered.slice(0, limit);
+}
+
+// Return all cached products (most recent last -> we reverse for recent-first consumers)
+export function getAllCachedProducts() {
+  try {
+    return Array.from(productCache.values());
+  } catch (e) {
+    console.warn('getAllCachedProducts error', e);
+    return [];
+  }
+}
+
+// ─── Elimapi — Taobao/1688 search ──────────────────────────────────────────
+// Elimapi removed: project uses SerpApi as primary external search provider
+export async function searchElimapi(keyword) {
+  console.warn('searchElimapi is deprecated in this build — use SerpApi only');
+  return [];
 }
 
 // ─── Normalizers ─────────────────────────────────────────────────────────────
@@ -95,6 +200,28 @@ function normalizeSerpapi(raw) {
     rating: raw.rating || null,
     reviews: raw.reviews || 0,
     url: buildAffiliateUrl(raw.link || raw.product_link, 'google'),
+    currency: '€',
+    inStock: true,
+    badge: null,
+    // `store` normalized so the UI can identify the source consistently
+    store: (raw.source && String(raw.source).toLowerCase().replace(/\s+/g, '')) || (function(){
+      try { const u = new URL(raw.link || raw.product_link); return u.hostname.replace(/^www\./,''); } catch { return 'google_shopping'; }
+    })(),
+  };
+}
+
+function normalizeElimapi(raw) {
+  return {
+    id: raw.product_id || raw.id,
+    source: 'Taobao',
+    sourceIcon: '🇨🇳',
+    title: raw.title,
+    price: parsePrice(raw.price),
+    originalPrice: parsePrice(raw.original_price),
+    image: raw.main_image || raw.thumbnail || '',
+    rating: raw.rating || null,
+    reviews: raw.reviews_count || 0,
+    url: raw.url || '#',
     currency: '€',
     inStock: true,
     badge: null,
@@ -136,6 +263,7 @@ export async function compareAllSources(keyword) {
   const results = await Promise.allSettled([
     searchAmazon(keyword),
     searchGoogleShopping(keyword),
+    searchElimapi(keyword),
   ]);
 
   const all = [];
