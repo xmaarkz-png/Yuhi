@@ -4,7 +4,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
   
   return (
-    <footer className="bg-[#274156] pt-8 lg:pt-12 pb-12 lg:pb-12 mt-auto text-white">
+    <footer className="hidden lg:block bg-[#274156] pt-8 lg:pt-12 pb-12 lg:pb-12 mt-auto text-white">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 text-center lg:text-left">
         {/* Social only (preserve real external links) */}
         <div className="flex flex-col items-center md:items-start">
