@@ -17,22 +17,24 @@ const AMAZON_TAG = 'yuhi00-21';
 
 // ─── SerpApi — Google Shopping (multi-store prices) ──────────────────────────
 export async function searchGoogleShopping(keyword) {
-  if (!SERPAPI_KEY) {
-    console.warn('No SERPAPI_KEY set — SerpApi results skipped');
+  if (!keyword) return [];
+  try {
+    const params = new URLSearchParams({
+      engine: 'google_shopping',
+      q: keyword,
+      gl: 'es',
+      hl: 'es',
+    });
+    // We call the server-side proxy at /api/serpapi which injects the api_key
+    const res = await fetch(`${SERPAPI_BASE}/search?${params}`);
+    if (!res.ok) throw new Error(`SerpApi proxy error: ${res.status}`);
+    const data = await res.json();
+    const items = data?.shopping_results || [];
+    return items.slice(0, 20).map(normalizeSerpapi);
+  } catch (err) {
+    console.warn('searchGoogleShopping error', err);
     return [];
   }
-  const params = new URLSearchParams({
-    engine: 'google_shopping',
-    q: keyword,
-    gl: 'es',
-    hl: 'es',
-    api_key: SERPAPI_KEY,
-  });
-  const res = await fetch(`${SERPAPI_BASE}/search?${params}`);
-  if (!res.ok) throw new Error(`SerpApi error: ${res.status}`);
-  const data = await res.json();
-  const items = data?.shopping_results || [];
-  return items.slice(0, 20).map(normalizeSerpapi);
 }
 
 /**
