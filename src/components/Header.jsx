@@ -41,18 +41,14 @@ export default function Header({ subtitle }) {
               <Link
                 key={path}
                 to={path}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all text-base font-semibold"
-                style={
-                  active
-                    ? { background: 'rgba(255,255,255,0.25)', color: '#fff' }
-                    : { color: 'rgba(255,255,255,0.85)' }
-                }
+                className={`inline-flex items-center gap-3 px-5 h-10 rounded-full transition-all text-base font-semibold ${active ? 'bg-white/25 text-white' : 'text-white/80'}`}
+                style={{ alignItems: 'center' }}
               >
-                <span className="text-lg">{icon}</span>
-                <span>{label}</span>
+                {icon ? <span className="text-lg leading-none">{icon}</span> : null}
+                <span className="leading-none">{label}</span>
                 {path === '/carrito' && cartCount > 0 && (
                   <span
-                    className="ml-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-[11px] font-bold"
+                    className="ml-2 inline-flex items-center justify-center rounded-full h-5 w-5 text-[11px] font-bold"
                     style={{ background: '#fff', color: '#db2777' }}
                   >
                     {cartCount}

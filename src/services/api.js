@@ -152,6 +152,16 @@ export function getCachedProductsByQuery(query, limit = 10) {
   return filtered.slice(0, limit);
 }
 
+// Return all cached products (most recent last -> we reverse for recent-first consumers)
+export function getAllCachedProducts() {
+  try {
+    return Array.from(productCache.values());
+  } catch (e) {
+    console.warn('getAllCachedProducts error', e);
+    return [];
+  }
+}
+
 // ─── Elimapi — Taobao/1688 search ──────────────────────────────────────────
 // Elimapi removed: project uses SerpApi as primary external search provider
 export async function searchElimapi(keyword) {

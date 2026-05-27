@@ -105,14 +105,14 @@ export default function Carrito() {
 
           <div className="bg-white rounded-[32px] p-6 shadow-sm border border-[#F0E6EA]">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold text-[#475569]">Resumen de compra</p>
-                <p className="text-2xl font-bold" style={{ color: '#1E293B' }}>
-                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)} productos
-                </p>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-[#475569] truncate">Resumen de compra</p>
+                  <p className="text-2xl font-bold truncate" style={{ color: '#1E293B' }}>
+                    {cartItems.reduce((sum, item) => sum + item.quantity, 0)} productos
+                  </p>
+                </div>
+                <p className="text-2xl font-bold flex-shrink-0" style={{ color: '#0F766E' }}>€{getCartTotal().toFixed(2)}</p>
               </div>
-              <p className="text-2xl font-bold" style={{ color: '#0F766E' }}>€{getCartTotal().toFixed(2)}</p>
-            </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <button
                 onClick={() => alert('Función de pago simulada: redirigir a pasarela o checkout.')}
